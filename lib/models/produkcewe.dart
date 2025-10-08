@@ -2,56 +2,71 @@ import 'package:flutter/material.dart';
 
 /// ================== MODEL PRODUK ==================
 abstract class Produk {
+  // Encapsulation: properti dibungkus dalam class dan hanya bisa di-set lewat constructor
   final String nama;
   final String gambar;
   final int harga;
   final String deskripsi;
 
+  // Encapsulation: constructor membungkus inisialisasi properti
   Produk(this.nama, this.gambar, this.harga, this.deskripsi);
 
+  // Polymorphism: method abstrak yang akan di-override oleh subclass
   String getKategori();
 }
 
+// Inheritance: Sepatu mewarisi properti & method dari Produk
 class Sepatu extends Produk {
   Sepatu(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
+
   @override
-  String getKategori() => "Sepatu";
+  String getKategori() => "Sepatu"; // Polymorphism
 }
 
+// Inheritance: Kemeja mewarisi properti & method dari Produk
 class Kemeja extends Produk {
   Kemeja(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
+
   @override
-  String getKategori() => "Kemeja";
+  String getKategori() => "Kemeja"; // Polymorphism
 }
 
+// Inheritance: Tshirt mewarisi properti & method dari Produk
 class Tshirt extends Produk {
   Tshirt(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
+
   @override
-  String getKategori() => "T-Shirt";
+  String getKategori() => "T-Shirt"; // Polymorphism
 }
 
+// Inheritance: Dress mewarisi properti & method dari Produk
 class Dress extends Produk {
   Dress(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
+
   @override
-  String getKategori() => "Dress";
+  String getKategori() => "Dress"; // Polymorphism
 }
 
+// Inheritance: Skirt mewarisi properti & method dari Produk
 class Skirt extends Produk {
   Skirt(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
-  @override
-  String getKategori() => "Skirt";
-}
 
+ 
+ @override
+  String getKategori() => "Skirt"; // Polymorphism
+}
+// Inheritance: Celana mewarisi properti & method dari Produk
 class Celana extends Produk {
   Celana(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
+
   @override
-  String getKategori() => "Celana";
+  String getKategori() => "Celana"; // Polymorphism
 }
 
 /// ================== DATA PRODUK CEWE ==================
@@ -120,8 +135,8 @@ final List<Produk> semuaProdukCewe = [
 
 /// ================== HALAMAN PRODUK CEWE ==================
 class ProdukCewePage extends StatefulWidget {
-  final Function(Map<String, dynamic>) onAddToCart;
-  final String searchQuery;
+  final Function(Map<String, dynamic>) onAddToCart; // Encapsulation
+  final String searchQuery; // Encapsulation
 
   const ProdukCewePage({
     Key? key,
@@ -134,10 +149,10 @@ class ProdukCewePage extends StatefulWidget {
 }
 
 class _ProdukCewePageState extends State<ProdukCewePage> {
-  late List<Produk> semuaProduk;
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  List<Map<String, dynamic>> cartItems = [];
-  String? selectedSize;
+  late List<Produk> semuaProduk; // Encapsulation
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>(); // Encapsulation
+  List<Map<String, dynamic>> cartItems = []; // Encapsulation
+  String? selectedSize; // Encapsulation
 
   @override
   void initState() {
@@ -163,7 +178,7 @@ class _ProdukCewePageState extends State<ProdukCewePage> {
   /// ================== DETAIL PRODUK ==================
   void _openDetail(Produk produk) {
     List<String> sizes;
-    switch (produk.getKategori()) {
+    switch (produk.getKategori()) { // Polymorphism
       case "Sepatu":
         sizes = ["36", "37", "38", "39", "40"];
         break;
@@ -198,16 +213,16 @@ class _ProdukCewePageState extends State<ProdukCewePage> {
                   child: SizedBox(
                     height: 200,
                     width: 200,
-                    child: Image.asset(produk.gambar, fit: BoxFit.cover),
+                    child: Image.asset(produk.gambar, fit: BoxFit.cover), // Encapsulation
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(produk.nama,
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("Rp ${produk.harga}"),
+                        fontSize: 18, fontWeight: FontWeight.bold)), // Encapsulation
+                Text("Rp ${produk.harga}"), // Encapsulation
                 const SizedBox(height: 10),
-                Text(produk.deskripsi),
+                Text(produk.deskripsi), // Encapsulation
                 if (sizes.isNotEmpty)
                   DropdownButton<String>(
                     value: localSize,
@@ -231,7 +246,7 @@ class _ProdukCewePageState extends State<ProdukCewePage> {
                             "name": produk.nama,
                             "price": produk.harga,
                             "image": produk.gambar,
-                            "category": produk.getKategori(),
+                            "category": produk.getKategori(), // Polymorphism
                             "size": localSize ?? "-",
                           });
                         });
@@ -239,7 +254,7 @@ class _ProdukCewePageState extends State<ProdukCewePage> {
                           "name": produk.nama,
                           "price": produk.harga,
                           "image": produk.gambar,
-                          "category": produk.getKategori(),
+                          "category": produk.getKategori(), // Polymorphism
                           "size": localSize ?? "-",
                         });
                         Navigator.pop(context);
@@ -255,7 +270,7 @@ class _ProdukCewePageState extends State<ProdukCewePage> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                               content:
-                                  Text("Beli ${produk.nama} berhasil 🚀")),
+                                  Text("Beli ${produk.nama} berhasil 🚀")), // Encapsulation
                         );
                       },
                       child: const Text("Beli Sekarang"),
@@ -335,7 +350,7 @@ class _ProdukCewePageState extends State<ProdukCewePage> {
   Widget build(BuildContext context) {
     Map<String, List<Produk>> kategoriMap = {};
     for (var p in semuaProduk) {
-      kategoriMap.putIfAbsent(p.getKategori(), () => []).add(p);
+      kategoriMap.putIfAbsent(p.getKategori(), () => []).add(p); // Polymorphism
     }
 
     double screenWidth = MediaQuery.of(context).size.width;
@@ -408,17 +423,17 @@ class _ProdukCewePageState extends State<ProdukCewePage> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.asset(produk.gambar,
-                                        fit: BoxFit.cover),
+                                        fit: BoxFit.cover), // Encapsulation
                                   ),
                                 ),
                                 const SizedBox(height: 6),
                                 Text(produk.nama,
                                     maxLines: 1,
-                                    overflow: TextOverflow.ellipsis),
+                                    overflow: TextOverflow.ellipsis), // Encapsulation
                                 Text("Rp ${produk.harga}",
                                     style: const TextStyle(
                                         color: Colors.green,
-                                        fontWeight: FontWeight.bold)),
+                                        fontWeight: FontWeight.bold)), // Encapsulation
                               ],
                             ),
                           ),

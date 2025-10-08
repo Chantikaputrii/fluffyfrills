@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+/// ================== MODEL PRODUK AKSESORIS ==================
+// Encapsulation: properti produk hanya bisa di-set melalui constructor
 abstract class ProdukAksesoris {
   final String nama;
   final String gambar;
@@ -8,34 +10,39 @@ abstract class ProdukAksesoris {
 
   ProdukAksesoris(this.nama, this.gambar, this.harga, this.deskripsi);
 
+  // Polymorphism: setiap subclass akan override method ini
   String getKategori();
 }
 
+// Inheritance: Topi mewarisi properti & method dari ProdukAksesoris
 class Topi extends ProdukAksesoris {
   Topi(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
 
   @override
-  String getKategori() => "Topi";
+  String getKategori() => "Topi"; // Polymorphism
 }
 
+// Inheritance: Kacamata mewarisi properti & method dari ProdukAksesoris
 class Kacamata extends ProdukAksesoris {
   Kacamata(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
 
   @override
-  String getKategori() => "Kacamata";
+  String getKategori() => "Kacamata"; // Polymorphism
 }
 
+// Inheritance: JamTangan mewarisi properti & method dari ProdukAksesoris
 class JamTangan extends ProdukAksesoris {
   JamTangan(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
 
   @override
-  String getKategori() => "Jam Tangan";
+  String getKategori() => "Jam Tangan"; // Polymorphism
 }
 
-// ✅ Global list produk aksesoris
+/// ================== DATA PRODUK AKSESORIS ==================
+// Global list produk aksesoris (Encapsulation)
 final List<ProdukAksesoris> semuaProdukAksesoris = [
   Topi("Topi Baseball", "assets/image/topi1.jpeg", 75000,
       "Topi baseball sporty cocok untuk sehari-hari."),
@@ -63,8 +70,9 @@ final List<ProdukAksesoris> semuaProdukAksesoris = [
       "Jam tangan stylish untuk menunjang penampilan."),
 ];
 
+/// ================== HALAMAN PRODUK AKSESORIS ==================
 class ProdukAksesorisPage extends StatefulWidget {
-  final Function(Map<String, dynamic>) onAddToCart;
+  final Function(Map<String, dynamic>) onAddToCart; // Encapsulation
   const ProdukAksesorisPage({Key? key, required this.onAddToCart})
       : super(key: key);
 
@@ -73,12 +81,12 @@ class ProdukAksesorisPage extends StatefulWidget {
 }
 
 class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
-  final List<ProdukAksesoris> semuaProduk = semuaProdukAksesoris;
-  String query = "";
-
-  List<Map<String, dynamic>> cartItems = [];
+  final List<ProdukAksesoris> semuaProduk = semuaProdukAksesoris; // Encapsulation
+  String query = ""; // Encapsulation
+  List<Map<String, dynamic>> cartItems = []; // Encapsulation
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
+  /// ================== HAPUS ITEM DI CART ==================
   void _removeFromCart(int index) {
     final removedItem = cartItems[index];
     cartItems.removeAt(index);
@@ -101,6 +109,7 @@ class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
     setState(() {});
   }
 
+  /// ================== SHOW CART ==================
   void _showCart() {
     showModalBottomSheet(
       isScrollControlled: true,
@@ -137,6 +146,7 @@ class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
     );
   }
 
+  /// ================== DETAIL PRODUK ==================
   void _openDetail(ProdukAksesoris produk) {
     final List<String> warnaPilihan = [
       "Putih",
@@ -187,7 +197,7 @@ class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
                       selected: isSelected,
                       selectedColor: Colors.pinkAccent,
                       onSelected: (_) =>
-                          setStateModal(() => selectedWarna = w),
+                          setStateModal(() => selectedWarna = w), // Pilih warna
                     );
                   }).toList(),
                 ),
@@ -207,7 +217,7 @@ class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
                               "price": produk.harga,
                               "image": produk.gambar,
                               "warna": selectedWarna!,
-                              "kategori": produk.getKategori(),
+                              "kategori": produk.getKategori(), // Polymorphism
                             });
                             widget.onAddToCart(cartItems.last);
                             Navigator.pop(context);
@@ -245,7 +255,7 @@ class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 🔎 Filter produk sesuai query
+    // 🔎 Filter produk sesuai query search
     final produkFiltered = semuaProduk.where((p) {
       final lowerQuery = query.toLowerCase();
       return p.nama.toLowerCase().contains(lowerQuery) ||
@@ -253,13 +263,14 @@ class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
           p.deskripsi.toLowerCase().contains(lowerQuery);
     }).toList();
 
+    // Kelompokkan produk berdasarkan kategori
     Map<String, List<ProdukAksesoris>> kategoriMap = {};
     for (var p in produkFiltered) {
-      kategoriMap.putIfAbsent(p.getKategori(), () => []).add(p);
+      kategoriMap.putIfAbsent(p.getKategori(), () => []).add(p); // Polymorphism
     }
 
     double screenWidth = MediaQuery.of(context).size.width;
-    double itemWidth = screenWidth / 4.5;
+    double itemWidth = screenWidth / 4.5; // Lebar tiap item
 
     return Scaffold(
       appBar: AppBar(
@@ -281,7 +292,7 @@ class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
                         color: Colors.red, shape: BoxShape.circle),
                     child: Text('${cartItems.length}',
                         style: const TextStyle(
-                            color: Colors.white, fontSize: 11)),
+                            color: Colors.white, fontSize: 11)), // Jumlah item
                   ),
                 )
             ],
@@ -290,7 +301,7 @@ class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
       ),
       body: Column(
         children: [
-          // 🔎 Query Search
+          // 🔎 Search bar
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(

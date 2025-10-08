@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/beranda_page.dart';
+import 'package:flutter_application_1/keranjang_page.dart';
+import 'package:flutter_application_1/pengaturan_page.dart';
+import 'package:flutter_application_1/pesanan_page.dart';
+import 'package:flutter_application_1/profil_page.dart';
+import 'package:flutter_application_1/widget/cart_icon.dart';
 import 'loginpage.dart';
 import 'produkpage.dart';
-
-// tambahan import produk
-import 'models/produkcowo.dart';
-import 'models/produkcewe.dart';
-import 'models/produkanak.dart';
-import 'models/produkaksesoris.dart';
 
 // ================== GLOBAL CART ==================
 List<Map<String, dynamic>> globalCart = [];
@@ -44,54 +44,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 }
 
-// ================== WIDGET KERANJANG (REUSABLE) ==================
-class CartIcon extends StatelessWidget {
-  final int itemCount;
-  final VoidCallback? onTap;
-
-  const CartIcon({Key? key, this.itemCount = 0, this.onTap}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.shopping_cart, color: Colors.black87),
-          onPressed: onTap,
-        ),
-        if (itemCount > 0)
-          Positioned(
-            right: 6,
-            top: 6,
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: const BoxDecoration(
-                color: Colors.red,
-                shape: BoxShape.circle,
-              ),
-              constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
-              child: Text(
-                '$itemCount',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-}
-
 // ================== DASHBOARD ==================
 class DashboardPage extends StatefulWidget {
   final String userEmail;
+  final String userName; // 🔥 tambahin nama
 
-  const DashboardPage({Key? key, required this.userEmail}) : super(key: key);
+  const DashboardPage({
+    Key? key,
+    required this.userEmail,
+    required this.userName,
+  }) : super(key: key);
 
   @override
   State<DashboardPage> createState() => _DashboardPageState();
@@ -110,7 +72,10 @@ class _DashboardPageState extends State<DashboardPage> {
       BerandaPage(userEmail: widget.userEmail, searchQuery: _searchQuery),
       ProdukPage(searchQuery: _searchQuery),
       const PesananPage(),
-      const ProfilPage(),
+      ProfilPage( // 🔥 profil dapat data login
+        userName: widget.userName,
+        userEmail: widget.userEmail,
+      ),
       const PengaturanPage(),
     ];
   }
@@ -152,23 +117,23 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             padding: const EdgeInsets.symmetric(vertical: 32),
             child: Column(
-              children: const [
-                CircleAvatar(
+              children: [
+                const CircleAvatar(
                   radius: 40,
                   backgroundImage: AssetImage("assets/logo_fashion.png"),
                   backgroundColor: Colors.white,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
-                  "Fluffy Frills",
-                  style: TextStyle(
+                  widget.userName, // 🔥 nama user dari login
+                  style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
                 Text(
-                  "Fashion Trend Masa Kini",
-                  style: TextStyle(color: Colors.white70),
+                  widget.userEmail, // 🔥 email user dari login
+                  style: const TextStyle(color: Colors.white70),
                 ),
               ],
             ),
@@ -264,266 +229,6 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       drawer: _buildSidebar(),
       body: _pages[_selectedIndex],
-    );
-  }
-}
-
-// ================== HALAMAN BERANDA ==================
-class BerandaPage extends StatelessWidget {
-  final String userEmail;
-  final String searchQuery; // ⬅️ tambahan untuk filter
-
-  const BerandaPage({Key? key, required this.userEmail, this.searchQuery = ""})
-      : super(key: key);
-
-  Widget _buildSectionResponsive(
-    BuildContext context,
-    String title,
-    List<Map<String, dynamic>> produkList,
-    Widget pageTujuan,
-  ) {
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    int crossAxisCount = 4;
-    final bigImageHeight = screenWidth * 0.35;
-    final childAspectRatio = 1.0;
-
-    if (produkList.isEmpty) return const SizedBox();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(title,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => pageTujuan),
-                  );
-                },
-                child: const Text("Lihat Semua"),
-              ),
-            ],
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          height: bigImageHeight,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(
-              image: AssetImage(produkList.first['image']),
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
-        GridView.builder(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 8,
-            mainAxisSpacing: 8,
-            childAspectRatio: childAspectRatio,
-          ),
-          itemCount: produkList.length - 1,
-          itemBuilder: (context, index) {
-            final item = produkList[index + 1];
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Image.asset(
-                      item['image'],
-                      fit: BoxFit.cover,
-                      width: double.infinity,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    item['name'],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                  Text(
-                    "Rp${item['price']}",
-                    style: const TextStyle(fontSize: 11, color: Colors.green),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final produkCowoPreview = semuaProdukCowo
-        .where((p) =>
-            p.nama.toLowerCase().contains(searchQuery.toLowerCase()))
-        .take(5)
-        .map((p) => {"name": p.nama, "image": p.gambar, "price": p.harga})
-        .toList();
-
-    final produkCewePreview = semuaProdukCewe
-        .where((p) =>
-            p.nama.toLowerCase().contains(searchQuery.toLowerCase()))
-        .take(5)
-        .map((p) => {"name": p.nama, "image": p.gambar, "price": p.harga})
-        .toList();
-
-    final produkAnakPreview = semuaProdukAnak
-        .where((p) =>
-            p.nama.toLowerCase().contains(searchQuery.toLowerCase()))
-        .take(5)
-        .map((p) => {"name": p.nama, "image": p.gambar, "price": p.harga})
-        .toList();
-
-    final produkAksesorisPreview = semuaProdukAksesoris
-        .where((p) =>
-            p.nama.toLowerCase().contains(searchQuery.toLowerCase()))
-        .take(5)
-        .map((p) => {"name": p.nama, "image": p.gambar, "price": p.harga})
-        .toList();
-
-    return ListView(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text("Halo, selamat datang $userEmail 💖",
-              style: const TextStyle(fontSize: 20)),
-        ),
-        _buildSectionResponsive(context, "Pria 👕", produkCowoPreview,
-            ProdukCowoPage(onAddToCart: (_) {})),
-        _buildSectionResponsive(context, "Wanita 👗", produkCewePreview,
-            ProdukCewePage(onAddToCart: (_) {})),
-        _buildSectionResponsive(context, "Anak 🧒", produkAnakPreview,
-            ProdukAnakPage(onAddToCart: (_) {})),
-        _buildSectionResponsive(context, "Aksesoris ⌚", produkAksesorisPreview,
-            ProdukAksesorisPage(onAddToCart: (_) {})),
-      ],
-    );
-  }
-}
-
-// ================== HALAMAN PESANAN ==================
-class PesananPage extends StatelessWidget {
-  const PesananPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 4,
-      itemBuilder: (context, index) {
-        return Card(
-          child: ListTile(
-            leading: const Icon(Icons.receipt_long),
-            title: Text("Pesanan #${index + 1001}"),
-            subtitle: const Text("Status: Diproses"),
-          ),
-        );
-      },
-    );
-  }
-}
-
-// ================== HALAMAN PROFIL ==================
-class ProfilPage extends StatelessWidget {
-  const ProfilPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.pinkAccent,
-              child: Icon(Icons.person, size: 60, color: Colors.white)),
-          SizedBox(height: 12),
-          Text("Cantika Putri",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          Text("pcantika446@gmail.com"),
-        ],
-      ),
-    );
-  }
-}
-
-// ================== HALAMAN PENGATURAN ==================
-class PengaturanPage extends StatelessWidget {
-  const PengaturanPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      children: const [
-        ListTile(leading: Icon(Icons.palette), title: Text("Tema")),
-        Divider(),
-        ListTile(leading: Icon(Icons.notifications), title: Text("Notifikasi")),
-        Divider(),
-        ListTile(
-            leading: Icon(Icons.security), title: Text("Privasi & Keamanan")),
-      ],
-    );
-  }
-}
-
-// ================== HALAMAN KERANJANG ==================
-class KeranjangPage extends StatefulWidget {
-  const KeranjangPage({Key? key}) : super(key: key);
-
-  @override
-  State<KeranjangPage> createState() => _KeranjangPageState();
-}
-
-class _KeranjangPageState extends State<KeranjangPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Keranjang Saya")),
-      body: globalCart.isEmpty
-          ? const Center(child: Text("Keranjang masih kosong 🛒"))
-          : ListView.builder(
-              itemCount: globalCart.length,
-              itemBuilder: (context, index) {
-                final item = globalCart[index];
-                return ListTile(
-                  leading: Image.asset(
-                    item['image'],
-                    width: 50,
-                    height: 50,
-                    fit: BoxFit.cover,
-                  ),
-                  title: Text(item['name']),
-                  subtitle:
-                      Text("Rp${item['price']} | Ukuran: ${item['size']}"),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () {
-                      setState(() {
-                        globalCart.removeAt(index);
-                      });
-                    },
-                  ),
-                );
-              },
-            ),
     );
   }
 }

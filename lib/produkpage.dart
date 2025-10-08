@@ -7,8 +7,8 @@ import 'models/produkcewe.dart';
 import 'models/produkanak.dart';
 import 'models/produkaksesoris.dart';
 
-// Global cart
-final List<Map<String, dynamic>> globalCart = [];
+// Import globalCart dari dashboard
+import 'dasboardpage.dart';
 
 class ProdukPage extends StatefulWidget {
   final String searchQuery;
@@ -24,7 +24,7 @@ class _ProdukPageState extends State<ProdukPage> {
   @override
   void initState() {
     super.initState();
-    query = widget.searchQuery.toLowerCase(); // tetap ada
+    query = widget.searchQuery.toLowerCase();
   }
 
   @override
@@ -37,7 +37,6 @@ class _ProdukPageState extends State<ProdukPage> {
         "page": ProdukCowoPage(onAddToCart: (item) {
           setState(() => globalCart.add(item));
         }),
-        "produk": semuaProdukCowo,
       },
       {
         "nama": "Women",
@@ -45,7 +44,6 @@ class _ProdukPageState extends State<ProdukPage> {
         "page": ProdukCewePage(onAddToCart: (item) {
           setState(() => globalCart.add(item));
         }),
-        "produk": semuaProdukCewe,
       },
       {
         "nama": "Kids",
@@ -53,7 +51,6 @@ class _ProdukPageState extends State<ProdukPage> {
         "page": ProdukAnakPage(onAddToCart: (item) {
           setState(() => globalCart.add(item));
         }),
-        "produk": semuaProdukAnak,
       },
       {
         "nama": "Aksesoris",
@@ -61,11 +58,9 @@ class _ProdukPageState extends State<ProdukPage> {
         "page": ProdukAksesorisPage(onAddToCart: (item) {
           setState(() => globalCart.add(item));
         }),
-        "produk": semuaProdukAksesoris,
       },
     ];
 
-    // TAMPILAN GRID SELALU, TANPA SEARCH LIST
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -95,7 +90,7 @@ class _ProdukPageState extends State<ProdukPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => kategori["page"]),
-              ).then((_) => setState(() {}));
+              ).then((_) => setState(() {})); // refresh keranjang
             },
             child: Card(
               shape: RoundedRectangleBorder(
@@ -118,7 +113,7 @@ class _ProdukPageState extends State<ProdukPage> {
                         end: Alignment.topCenter,
                         colors: [
                           Colors.black.withOpacity(0.6),
-                          Colors.transparent
+                          Colors.transparent,
                         ],
                       ),
                     ),

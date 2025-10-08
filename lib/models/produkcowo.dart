@@ -2,51 +2,57 @@ import 'package:flutter/material.dart';
 
 /// ================== MODEL PRODUK ==================
 abstract class Produk {
+  // Encapsulation: properti dibungkus dalam class dan hanya bisa di-set lewat constructor
   final String nama;
   final String gambar;
   final int harga;
   final String deskripsi;
 
+  // Encapsulation: constructor membungkus inisialisasi properti
   Produk(this.nama, this.gambar, this.harga, this.deskripsi);
 
+  // Polymorphism: method abstrak yang akan di-override oleh subclass
   String getKategori();
 }
 
+// Inheritance: Sepatu mewarisi properti & method dari Produk
 class Sepatu extends Produk {
   Sepatu(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
 
   @override
-  String getKategori() => "Sepatu";
+  String getKategori() => "Sepatu"; // Polymorphism: override method getKategori
 }
 
+// Inheritance: Kemeja mewarisi properti & method dari Produk
 class Kemeja extends Produk {
   Kemeja(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
 
   @override
-  String getKategori() => "Kemeja";
+  String getKategori() => "Kemeja"; // Polymorphism
 }
 
+// Inheritance: Tshirt mewarisi properti & method dari Produk
 class Tshirt extends Produk {
   Tshirt(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
 
   @override
-  String getKategori() => "T-Shirt";
+  String getKategori() => "T-Shirt"; // Polymorphism
 }
 
+// Inheritance: Celana mewarisi properti & method dari Produk
 class Celana extends Produk {
   Celana(String nama, String gambar, int harga, String deskripsi)
       : super(nama, gambar, harga, deskripsi);
 
   @override
-  String getKategori() => "Celana";
+  String getKategori() => "Celana"; // Polymorphism
 }
 
 /// ================== DATA PRODUK COWO ==================
 final List<Produk> semuaProdukCowo = [
-  // Sepatu
   Sepatu("Sepatu Cowo 1", "assets/image/sepatucowo1.jpeg", 350000,
       "Sepatu keren untuk aktivitas harian."),
   Sepatu("Sepatu Cowo 2", "assets/image/sepatucowo2.jpeg", 420000,
@@ -57,7 +63,6 @@ final List<Produk> semuaProdukCowo = [
       "Sepatu kulit elegan."),
   Sepatu("Sepatu Cowo 5", "assets/image/sepatucowo5.jpeg", 480000,
       "Sepatu premium kualitas tinggi."),
-  // Kemeja
   Kemeja("Kemeja Cowo 1", "assets/image/kemejacowo1.jpeg", 220000,
       "Kemeja formal elegan."),
   Kemeja("Kemeja Cowo 2", "assets/image/kemejacowo2.jpeg", 200000,
@@ -68,7 +73,6 @@ final List<Produk> semuaProdukCowo = [
       "Kemeja slim fit."),
   Kemeja("Kemeja Cowo 5", "assets/image/kemejacowo5.jpeg", 230000,
       "Kemeja casual stylish."),
-  // T-Shirt
   Tshirt("T-Shirt Cowo 1", "assets/image/tshirtcowo1.jpeg", 120000,
       "Kaos casual bahan lembut."),
   Tshirt("T-Shirt Cowo 2", "assets/image/tshirtcowo2.jpeg", 110000,
@@ -79,7 +83,6 @@ final List<Produk> semuaProdukCowo = [
       "Kaos sporty breathable."),
   Tshirt("T-Shirt Cowo 5", "assets/image/tshirtcowo5.jpeg", 125000,
       "Kaos nyaman kualitas tinggi."),
-  // Celana
   Celana("Celana Cowo 1", "assets/image/celanacowo1.jpeg", 180000,
       "Celana jeans slimfit."),
   Celana("Celana Cowo 2", "assets/image/celanacowo2.jpeg", 175000,
@@ -92,8 +95,8 @@ final List<Produk> semuaProdukCowo = [
 
 /// ================== HALAMAN PRODUK COWO ==================
 class ProdukCowoPage extends StatefulWidget {
-  final Function(Map<String, dynamic>) onAddToCart;
-  final String searchQuery;
+  final Function(Map<String, dynamic>) onAddToCart; // Encapsulation: properti dikontrol lewat widget
+  final String searchQuery; // Encapsulation
 
   const ProdukCowoPage({
     Key? key,
@@ -106,11 +109,11 @@ class ProdukCowoPage extends StatefulWidget {
 }
 
 class _ProdukCowoPageState extends State<ProdukCowoPage> {
-  late List<Produk> semuaProduk;
+  late List<Produk> semuaProduk; // Encapsulation: data produk dikontrol oleh state
 
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  List<Map<String, dynamic>> cartItems = [];
-  String? selectedSize;
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>(); // Encapsulation
+  List<Map<String, dynamic>> cartItems = []; // Encapsulation
+  String? selectedSize; // Encapsulation
 
   @override
   void initState() {
@@ -136,7 +139,7 @@ class _ProdukCowoPageState extends State<ProdukCowoPage> {
   /// ========== DETAIL PRODUK ==========
   void _openDetail(Produk produk) {
     List<String> sizes;
-    switch (produk.getKategori()) {
+    switch (produk.getKategori()) { // Polymorphism: hasil tergantung subclass produk
       case "Sepatu":
         sizes = ["40", "41", "42", "43"];
         break;
@@ -170,16 +173,16 @@ class _ProdukCowoPageState extends State<ProdukCowoPage> {
                   child: SizedBox(
                     height: 200,
                     width: 200,
-                    child: Image.asset(produk.gambar, fit: BoxFit.cover),
+                    child: Image.asset(produk.gambar, fit: BoxFit.cover), // Encapsulation: akses properti produk
                   ),
                 ),
                 const SizedBox(height: 12),
                 Text(produk.nama,
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold)),
-                Text("Rp ${produk.harga}"),
+                        fontSize: 18, fontWeight: FontWeight.bold)), // Encapsulation
+                Text("Rp ${produk.harga}"), // Encapsulation
                 const SizedBox(height: 10),
-                Text(produk.deskripsi),
+                Text(produk.deskripsi), // Encapsulation
                 if (sizes.isNotEmpty)
                   DropdownButton<String>(
                     value: localSize,
@@ -203,7 +206,7 @@ class _ProdukCowoPageState extends State<ProdukCowoPage> {
                             "name": produk.nama,
                             "price": produk.harga,
                             "image": produk.gambar,
-                            "category": produk.getKategori(),
+                            "category": produk.getKategori(), // Polymorphism
                             "size": localSize ?? "-",
                           });
                         });
@@ -211,7 +214,7 @@ class _ProdukCowoPageState extends State<ProdukCowoPage> {
                           "name": produk.nama,
                           "price": produk.harga,
                           "image": produk.gambar,
-                          "category": produk.getKategori(),
+                          "category": produk.getKategori(), // Polymorphism
                           "size": localSize ?? "-",
                         });
                         Navigator.pop(context);
@@ -229,7 +232,7 @@ class _ProdukCowoPageState extends State<ProdukCowoPage> {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                              content: Text("Beli ${produk.nama} berhasil 🚀")),
+                              content: Text("Beli ${produk.nama} berhasil 🚀")), // Encapsulation
                         );
                       },
                       child: const Text("Beli Sekarang"),
@@ -309,7 +312,7 @@ class _ProdukCowoPageState extends State<ProdukCowoPage> {
   Widget build(BuildContext context) {
     Map<String, List<Produk>> kategoriMap = {};
     for (var p in semuaProduk) {
-      kategoriMap.putIfAbsent(p.getKategori(), () => []).add(p);
+      kategoriMap.putIfAbsent(p.getKategori(), () => []).add(p); // Polymorphism
     }
 
     double screenWidth = MediaQuery.of(context).size.width;
@@ -382,17 +385,17 @@ class _ProdukCowoPageState extends State<ProdukCowoPage> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
                                     child: Image.asset(produk.gambar,
-                                        fit: BoxFit.cover),
+                                        fit: BoxFit.cover), // Encapsulation
                                   ),
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
-                                  produk.nama,
+                                  produk.nama, // Encapsulation
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  "Rp ${produk.harga}",
+                                  "Rp ${produk.harga}", // Encapsulation
                                   style: const TextStyle(
                                       color: Colors.green,
                                       fontWeight: FontWeight.bold),

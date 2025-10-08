@@ -263,6 +263,7 @@ class _LoginPageState extends State<LoginPage>
       MaterialPageRoute(
         builder: (_) => DashboardPage(
           userEmail: email,
+          userName: email,
         ),
       ),
     );
