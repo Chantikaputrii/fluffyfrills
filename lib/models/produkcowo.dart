@@ -1,418 +1,432 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:getwidget/getwidget.dart';
+import '/models/produk.dart';
+import '/widget/detail_produk.dart';
+import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import '../cart.dart'; // <- import Cart singleton
 
-/// ================== MODEL PRODUK ==================
-abstract class Produk {
-  // Encapsulation: properti dibungkus dalam class dan hanya bisa di-set lewat constructor
-  final String nama;
-  final String gambar;
-  final int harga;
-  final String deskripsi;
 
-  // Encapsulation: constructor membungkus inisialisasi properti
-  Produk(this.nama, this.gambar, this.harga, this.deskripsi);
 
-  // Polymorphism: method abstrak yang akan di-override oleh subclass
-  String getKategori();
-}
+// ================== MODEL PRODUK COWO ==================
+class ProdukCowo extends Produk {
+  final String kategori;
+  final double rating;
+  final int terjual;
+  
 
-// Inheritance: Sepatu mewarisi properti & method dari Produk
-class Sepatu extends Produk {
-  Sepatu(String nama, String gambar, int harga, String deskripsi)
-      : super(nama, gambar, harga, deskripsi);
-
-  @override
-  String getKategori() => "Sepatu"; // Polymorphism: override method getKategori
-}
-
-// Inheritance: Kemeja mewarisi properti & method dari Produk
-class Kemeja extends Produk {
-  Kemeja(String nama, String gambar, int harga, String deskripsi)
-      : super(nama, gambar, harga, deskripsi);
-
-  @override
-  String getKategori() => "Kemeja"; // Polymorphism
-}
-
-// Inheritance: Tshirt mewarisi properti & method dari Produk
-class Tshirt extends Produk {
-  Tshirt(String nama, String gambar, int harga, String deskripsi)
-      : super(nama, gambar, harga, deskripsi);
+  ProdukCowo(
+    String nama,
+    String gambar,
+    int harga,
+    this.kategori, {
+    required String deskripsi,
+    this.rating = 5.0,
+    this.terjual = 100,
+  }) : super(
+          nama: nama,
+          gambar: gambar,
+          harga: harga,
+          deskripsi: deskripsi,
+        );
 
   @override
-  String getKategori() => "T-Shirt"; // Polymorphism
-}
-
-// Inheritance: Celana mewarisi properti & method dari Produk
-class Celana extends Produk {
-  Celana(String nama, String gambar, int harga, String deskripsi)
-      : super(nama, gambar, harga, deskripsi);
+  String getKategori() => "Cowo";
 
   @override
-  String getKategori() => "Celana"; // Polymorphism
+  String getInfo() => "$kategori: $nama - Rp$harga";
 }
 
-/// ================== DATA PRODUK COWO ==================
-final List<Produk> semuaProdukCowo = [
-  Sepatu("Sepatu Cowo 1", "assets/image/sepatucowo1.jpeg", 350000,
-      "Sepatu keren untuk aktivitas harian."),
-  Sepatu("Sepatu Cowo 2", "assets/image/sepatucowo2.jpeg", 420000,
-      "Sepatu sporty nyaman dipakai."),
-  Sepatu("Sepatu Cowo 3", "assets/image/sepatucowo3.jpeg", 390000,
-      "Sepatu casual trendi."),
-  Sepatu("Sepatu Cowo 4", "assets/image/sepatucowo4.jpeg", 450000,
-      "Sepatu kulit elegan."),
-  Sepatu("Sepatu Cowo 5", "assets/image/sepatucowo5.jpeg", 480000,
-      "Sepatu premium kualitas tinggi."),
-  Kemeja("Kemeja Cowo 1", "assets/image/kemejacowo1.jpeg", 220000,
-      "Kemeja formal elegan."),
-  Kemeja("Kemeja Cowo 2", "assets/image/kemejacowo2.jpeg", 200000,
-      "Kemeja santai untuk aktivitas harian."),
-  Kemeja("Kemeja Cowo 3", "assets/image/kemejacowo3.jpeg", 210000,
-      "Kemeja motif modern."),
-  Kemeja("Kemeja Cowo 4", "assets/image/kemejacowo4.jpeg", 240000,
-      "Kemeja slim fit."),
-  Kemeja("Kemeja Cowo 5", "assets/image/kemejacowo5.jpeg", 230000,
-      "Kemeja casual stylish."),
-  Tshirt("T-Shirt Cowo 1", "assets/image/tshirtcowo1.jpeg", 120000,
-      "Kaos casual bahan lembut."),
-  Tshirt("T-Shirt Cowo 2", "assets/image/tshirtcowo2.jpeg", 110000,
-      "Kaos simple cocok untuk sehari-hari."),
-  Tshirt("T-Shirt Cowo 3", "assets/image/tshirtcowo3.jpeg", 115000,
-      "Kaos trendy desain unik."),
-  Tshirt("T-Shirt Cowo 4", "assets/image/tshirtcowo4.jpeg", 130000,
-      "Kaos sporty breathable."),
-  Tshirt("T-Shirt Cowo 5", "assets/image/tshirtcowo5.jpeg", 125000,
-      "Kaos nyaman kualitas tinggi."),
-  Celana("Celana Cowo 1", "assets/image/celanacowo1.jpeg", 180000,
-      "Celana jeans slimfit."),
-  Celana("Celana Cowo 2", "assets/image/celanacowo2.jpeg", 175000,
-      "Celana bahan stretch nyaman."),
-  Celana("Celana Cowo 3", "assets/image/celanacowo3.jpeg", 185000,
-      "Celana chino modern."),
-  Celana("Celana Cowo 4", "assets/image/celanacowo4.jpeg", 190000,
-      "Celana santai stylish."),
+// ================== DATA PRODUK COWO ==================
+final List<ProdukCowo> semuaProdukCowo = [
+  // 🟦 Sepatu
+  ProdukCowo(
+    "Sepatu AirStride Sneakers",
+    "assets/image/sepatucowo1.jpeg",
+    350000,
+    "Sepatu",
+    deskripsi:
+        "AirStride Sneakers hadir dengan desain modern yang stylish dan sol empuk yang memberikan kenyamanan maksimal. Material breathable memastikan kaki tetap sejuk, cocok untuk aktivitas harian maupun olahraga ringan. Sepatu ini juga mudah dipadukan dengan berbagai gaya fashion casual maupun sporty, sehingga tampil trendi sepanjang hari.",
+    rating: 4.8,
+    terjual: 250,
+  ),
+  ProdukCowo(
+    "Sepatu UrbanFlex Runner",
+    "assets/image/sepatucowo2.jpeg",
+    420000,
+    "Sepatu",
+    deskripsi:
+        "UrbanFlex Runner adalah sepatu lari urban dengan teknologi fleksibel yang mengikuti gerakan kaki secara natural. Desain minimalis namun tetap stylish membuatnya cocok dipakai untuk jalan santai, gym, maupun olahraga outdoor ringan. Sol anti-slip memberikan stabilitas ekstra di berbagai permukaan.",
+    rating: 4.7,
+    terjual: 200,
+  ),
+  ProdukCowo(
+    "Sepatu StreetWave High",
+    "assets/image/sepatucowo3.jpeg",
+    390000,
+    "Sepatu",
+    deskripsi: 
+        "StreetWave High hadir dengan desain high-top yang modern dan edgy, cocok untuk kamu yang ingin tampil standout. Bahan berkualitas tinggi membuatnya nyaman dipakai seharian, sementara sol yang lentur mendukung mobilitas aktif. Ideal untuk hangout, jalan-jalan, atau sekadar menambah gaya casual urban kamu.",
+    rating: 4.9,
+    terjual: 180,
+  ),
+  ProdukCowo(
+    "Sepatu Vortex Trail",
+    "assets/image/sepatucowo4.jpeg",
+    450000,
+    "Sepatu",
+    deskripsi:
+        "Vortex Trail merupakan sepatu outdoor yang tangguh dengan grip maksimal, cocok untuk hiking, trekking, maupun aktivitas fisik di luar ruangan. Material tahan lama dan sol anti-slip memberikan kenyamanan serta keamanan saat melangkah di medan apa pun. Desain sporty juga membuatnya tetap stylish untuk penggunaan kasual.",
+    rating: 4.6,
+    terjual: 150,
+  ),
+  ProdukCowo(
+    "Seapatu Nova Classic",
+    "assets/image/sepatucowo5.jpeg",
+    480000,
+    "Sepatu",
+    deskripsi:
+        "Nova Classic adalah sepatu elegan dengan desain timeless yang cocok untuk berbagai kesempatan, dari formal hingga casual. Bahan premium dipadukan dengan sol empuk memberikan kenyamanan optimal. Penampilan yang rapi dan modern membuatmu percaya diri di kantor, acara resmi, maupun hangout santai.",
+    rating: 5.0,
+    terjual: 120,
+  ),
+  // 👔 KEMEJA
+  ProdukCowo(
+    "Kemeja Oxford Slim Fit",
+    "assets/image/kemejacowo1.jpeg",
+    220000,
+    "Kemeja",
+    deskripsi:
+        "Oxford Slim Fit adalah kemeja formal yang dirancang untuk pria modern. Bahan katun lembut memberikan kenyamanan sepanjang hari, sementara potongan slim fit menampilkan siluet rapi dan stylish. Cocok untuk ke kantor, meeting, atau acara semi-formal, mudah dipadukan dengan jas maupun celana chino.",
+    rating: 4.9,
+    terjual: 180,
+  ),
+  ProdukCowo(
+    "Kemeja Classic Linen Shirt",
+    "assets/image/kemejacowo2.jpeg",
+    200000,
+    "Kemeja",
+    deskripsi:
+        "Classic Linen Shirt menghadirkan kesan santai tapi tetap elegan. Terbuat dari bahan linen berkualitas tinggi yang breathable, membuatmu nyaman saat cuaca panas. Cocok dipakai untuk hangout, liburan, maupun casual office look. Warnanya natural dan mudah dipadukan dengan celana jeans maupun chino.",
+    rating: 4.8,
+    terjual: 160,
+  ),
+  ProdukCowo(
+    "Kemeja Urban Denim Shirt",
+    "assets/image/kemejacowo3.jpeg",
+    210000,
+    "Kemeja",
+    deskripsi:
+        "Urban Denim Shirt adalah kemeja denim modern dengan nuansa kasual yang stylish. Material denim berkualitas memberikan tampilan maskulin dan tahan lama. Bisa dipakai untuk street style, hangout, atau casual meeting. Desainnya fleksibel sehingga bisa dipadukan dengan celana panjang, jeans, maupun celana chino.",
+    rating: 4.7,
+    terjual: 140,
+  ),
+  ProdukCowo(
+    "Kemeja Pure White Formal",
+    "assets/image/kemejacowo4.jpeg",
+    240000,
+    "Kemeja",
+    deskripsi:
+        "Pure White Formal adalah kemeja klasik warna putih yang wajib dimiliki setiap pria. Bahan katun premium membuatnya nyaman dan breathable, sementara desain formalnya cocok untuk kantor, presentasi, maupun acara resmi. Mudah dipadukan dengan jas, blazer, atau celana formal apa pun.",
+    rating: 5.0,
+    terjual: 130,
+  ),
+  ProdukCowo(
+    "Kemeja Tropical Breeze",
+    "assets/image/kemejacowo5.jpeg",
+    230000,
+    "Kemeja",
+    deskripsi:
+        "Tropical Breeze adalah kemeja motif tropis yang ceria dan fresh. Cocok untuk liburan, pantai, atau acara santai. Bahan ringan dan breathable membuatmu tetap nyaman saat cuaca panas, sementara desain motif tropical menambahkan kesan fun dan stylish pada penampilanmu.",
+    rating: 4.6,
+    terjual: 110,
+  ),
+  // 👕 T-SHIRT
+  ProdukCowo(
+    "T-shirt Basic Cotton Tee",
+    "assets/image/tshirtcowo1.jpeg",
+    120000,
+    "T-Shirt",
+    deskripsi:
+        "Basic Cotton Tee adalah kaos sehari-hari yang nyaman dan stylish. Terbuat dari katun lembut berkualitas tinggi, memberikan kenyamanan maksimal sepanjang hari. Bisa dipadukan dengan celana jeans, short pants, atau layering dengan jaket favoritmu untuk tampilan casual yang effortless.",
+    rating: 4.9,
+    terjual: 300,
+  ),
+  ProdukCowo(
+    "T-shirt Retro Print Tee",
+    "assets/image/tshirtcowo2.jpeg",
+    110000,
+    "T-Shirt",
+    deskripsi:
+        "Retro Print Tee hadir dengan desain vintage yang unik dan eye-catching. Terbuat dari katun lembut, nyaman untuk aktivitas sehari-hari. Cocok dipakai untuk hangout, nongkrong, atau tampil casual keren dengan sneakers favoritmu.",
+    rating: 4.8,
+    terjual: 250,
+  ),
+  ProdukCowo(
+    "T-shirt Oversized Street Tee",
+    "assets/image/tshirtcowo3.jpeg",
+    115000,
+    "T-Shirt",
+    deskripsi:
+        "Oversized Street Tee memberikan vibe urban street style yang trendy. Potongan longgar memberikan kenyamanan dan kebebasan bergerak. Cocok dipadukan dengan jogger pants, sneakers, dan aksesori street style lainnya.",
+    rating: 4.7,
+    terjual: 200,
+  ),
+  ProdukCowo(
+    "T-shirt Minimalist Core Tee",
+    "assets/image/tshirtcowo4.jpeg",
+    130000,
+    "T-Shirt",
+    deskripsi:
+        "Minimalist Core Tee hadir dengan desain simpel namun elegan, cocok untuk pria yang menyukai tampilan clean dan minimalis. Terbuat dari katun premium yang nyaman, mudah dipadukan dengan celana jeans atau chino untuk tampilan smart casual.",
+    rating: 4.9,
+    terjual: 180,
+  ),
+  ProdukCowo(
+    "T-shirt Signature Graphic Tee",
+    "assets/image/tshirtcowo5.jpeg",
+    125000,
+    "T-Shirt",
+    deskripsi:
+        "Signature Graphic Tee menampilkan desain grafis unik yang standout. Material katun lembut memastikan kenyamanan, sementara desain bold memberikan kesan fashionable dan modern. Cocok dipakai untuk street style maupun casual hangout.",
+    rating: 5.0,
+    terjual: 150,
+  ),
+  // 👖 CELANA
+  ProdukCowo(
+    "Celana Chino Slim Fit",
+    "assets/image/celanacowo1.jpeg",
+    180000,
+    "Celana",
+    deskripsi:
+        "Chino Slim Fit adalah celana formal-casual yang nyaman dipakai sepanjang hari. Potongan slim fit menampilkan siluet rapi, cocok dipadukan dengan kemeja atau t-shirt. Bahan ringan namun berkualitas memastikan kenyamanan di berbagai kegiatan.",
+    rating: 4.8,
+    terjual: 140,
+  ),
+  ProdukCowo(
+    "Celana Denim Classic Blue",
+    "assets/image/celanacowo2.jpeg",
+    175000,
+    "Celana",
+    deskripsi:
+        "Denim Classic Blue, celana jeans klasik dengan warna biru timeless. Material denim berkualitas tinggi, tahan lama, dan nyaman dipakai seharian. Cocok untuk tampilan kasual maupun semi-formal dengan padu padan yang fleksibel.",
+    rating: 4.9,
+    terjual: 160,
+  ),
+  ProdukCowo(
+    "Celana Cargo Utility Pants",
+    "assets/image/celanacowo3.jpeg",
+    185000,
+    "Celana",
+    deskripsi:
+        "Cargo Utility Pants hadir dengan desain multifungsi dan kantong tambahan yang stylish. Terbuat dari bahan berkualitas dan nyaman dipakai, ideal untuk aktivitas outdoor maupun street style casual. Memberikan kesan maskulin dan praktis.",
+    rating: 4.7,
+    terjual: 130,
+  ),
+  ProdukCowo(
+    "Celana Tapered Black Jeans",
+    "assets/image/celanacowo4.jpeg",
+    190000,
+    "Celana",
+    deskripsi:
+        "Tapered Black Jeans, celana hitam modern dengan potongan taper yang rapi. Terbuat dari bahan denim nyaman dan fleksibel, cocok untuk gaya casual maupun semi-formal. Mudah dipadukan dengan t-shirt atau kemeja favoritmu.",
+    rating: 4.9,
+    terjual: 120,
+  ),
 ];
 
-/// ================== HALAMAN PRODUK COWO ==================
-class ProdukCowoPage extends StatefulWidget {
-  final Function(Map<String, dynamic>) onAddToCart; // Encapsulation: properti dikontrol lewat widget
-  final String searchQuery; // Encapsulation
+// ================== HALAMAN PRODUK COWO ==================
+class ProdukCowoPage extends StatelessWidget {
+  final Function(Map<String, dynamic>) onAddToCart;
 
-  const ProdukCowoPage({
-    Key? key,
-    required this.onAddToCart,
-    this.searchQuery = "",
-  }) : super(key: key);
+  const ProdukCowoPage({Key? key, required this.onAddToCart}) : super(key: key);
 
-  @override
-  State<ProdukCowoPage> createState() => _ProdukCowoPageState();
-}
+  List<String> getKategoriUnik() =>
+      semuaProdukCowo.map((p) => p.kategori).toSet().toList();
 
-class _ProdukCowoPageState extends State<ProdukCowoPage> {
-  late List<Produk> semuaProduk; // Encapsulation: data produk dikontrol oleh state
-
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>(); // Encapsulation
-  List<Map<String, dynamic>> cartItems = []; // Encapsulation
-  String? selectedSize; // Encapsulation
-
-  @override
-  void initState() {
-    super.initState();
-    _applyFilter();
+  String formatHarga(int harga) {
+    final formatter =
+        NumberFormat.currency(locale: 'id', symbol: 'Rp', decimalDigits: 0);
+    return formatter.format(harga);
   }
 
-  @override
-  void didUpdateWidget(covariant ProdukCowoPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.searchQuery != widget.searchQuery) {
-      setState(() => _applyFilter());
-    }
-  }
+  Widget _buildGridKategori(
+      BuildContext context, String kategori, List<ProdukCowo> produkList) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            kategori,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.65,
+          ),
+          itemCount: produkList.length,
+          itemBuilder: (context, index) {
+            final produk = produkList[index];
 
-  void _applyFilter() {
-    semuaProduk = semuaProdukCowo
-        .where((p) =>
-            p.nama.toLowerCase().contains(widget.searchQuery.toLowerCase()))
-        .toList();
-  }
-
-  /// ========== DETAIL PRODUK ==========
-  void _openDetail(Produk produk) {
-    List<String> sizes;
-    switch (produk.getKategori()) { // Polymorphism: hasil tergantung subclass produk
-      case "Sepatu":
-        sizes = ["40", "41", "42", "43"];
-        break;
-      case "Kemeja":
-      case "T-Shirt":
-        sizes = ["S", "M", "L", "XL"];
-        break;
-      case "Celana":
-        sizes = ["28", "29", "30", "31"];
-        break;
-      default:
-        sizes = [];
-    }
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        String? localSize = selectedSize;
-        return StatefulBuilder(
-          builder: (context, setStateModal) => Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: SizedBox(
-                    height: 200,
-                    width: 200,
-                    child: Image.asset(produk.gambar, fit: BoxFit.cover), // Encapsulation: akses properti produk
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DetailProdukPage(
+                      produk: produk,
+                      onAddToCart: (cartItem) {
+                        Cart().addItem(cartItem);
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                Text(produk.nama,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold)), // Encapsulation
-                Text("Rp ${produk.harga}"), // Encapsulation
-                const SizedBox(height: 10),
-                Text(produk.deskripsi), // Encapsulation
-                if (sizes.isNotEmpty)
-                  DropdownButton<String>(
-                    value: localSize,
-                    hint: const Text("Pilih Ukuran"),
-                    items: sizes
-                        .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                        .toList(),
-                    onChanged: (val) => setStateModal(() => localSize = val),
-                  ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                );
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                elevation: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.amber,
+                    // Gambar produk
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.vertical(top: Radius.circular(12)),
+                        child: Image.asset(
+                          produk.gambar,
+                          fit: BoxFit.cover,
+                        ),
                       ),
-                      onPressed: () {
-                        setState(() {
-                          cartItems.add({
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Nama produk
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        produk.nama,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 12),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+
+                    // Harga
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        formatHarga(produk.harga),
+                        style: const TextStyle(
+                          color: Colors.pinkAccent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 11,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Rating
+                    Center(
+                      child: RatingStars(
+                        value: produk.rating,
+                        starCount: 5,
+                        starSize: 18,
+                        starColor: Colors.amber,
+                        valueLabelVisibility: false,
+                        maxValue: 5,
+                        starSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+
+                    Center(
+                      child: Text(
+                        produk.rating.toStringAsFixed(1),
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+
+                    Text(
+                      "${produk.terjual}+ Terjual",
+                      style: const TextStyle(fontSize: 10, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+
+                    // Tombol tambah ke keranjang
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: GFButton(
+                        onPressed: () {
+                          Cart().addItem({
                             "name": produk.nama,
                             "price": produk.harga,
                             "image": produk.gambar,
-                            "category": produk.getKategori(), // Polymorphism
-                            "size": localSize ?? "-",
                           });
-                        });
-                        widget.onAddToCart({
-                          "name": produk.nama,
-                          "price": produk.harga,
-                          "image": produk.gambar,
-                          "category": produk.getKategori(), // Polymorphism
-                          "size": localSize ?? "-",
-                        });
-                        Navigator.pop(context);
-                      },
-                      child: const Text(
-                        "Keranjang",
-                        style: TextStyle(color: Colors.black),
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text("${produk.nama} ditambahkan ke keranjang!"),
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+                        },
+                        text: "Tambah",
+                        color: Colors.pinkAccent,
+                        fullWidthButton: true,
+                        size: GFSize.SMALL,
+                        shape: GFButtonShape.pills,
                       ),
                     ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.pinkAccent,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text("Beli ${produk.nama} berhasil 🚀")), // Encapsulation
-                        );
-                      },
-                      child: const Text("Beli Sekarang"),
-                    ),
+                    const SizedBox(height: 6),
                   ],
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  /// ========== HAPUS ITEM DI KERANJANG ==========
-  void _removeFromCart(int index) {
-    final removedItem = cartItems[index];
-    cartItems.removeAt(index);
-    _listKey.currentState?.removeItem(
-      index,
-      (context, animation) => SizeTransition(
-        sizeFactor: animation,
-        axis: Axis.vertical,
-        child: ListTile(
-          leading: AspectRatio(
-              aspectRatio: 1,
-              child: Image.asset(removedItem['image'], fit: BoxFit.cover)),
-          title: Text(removedItem['name']),
-          subtitle:
-              Text("Rp ${removedItem['price']} | Ukuran: ${removedItem['size']}"),
-        ),
-      ),
-      duration: const Duration(milliseconds: 300),
-    );
-    setState(() {});
-  }
-
-  /// ========== SHOW CART ==========
-  void _showCart() {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (_) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        padding: const EdgeInsets.all(16),
-        child: cartItems.isEmpty
-            ? const Center(child: Text("Keranjang masih kosong 🛒"))
-            : AnimatedList(
-                key: _listKey,
-                initialItemCount: cartItems.length,
-                itemBuilder: (context, index, animation) {
-                  final item = cartItems[index];
-                  return SizeTransition(
-                    sizeFactor: animation,
-                    axis: Axis.vertical,
-                    child: ListTile(
-                      leading: AspectRatio(
-                          aspectRatio: 1,
-                          child: Image.asset(item['image'], fit: BoxFit.cover)),
-                      title: Text(item['name']),
-                      subtitle: Text(
-                          "Rp ${item['price']} | Ukuran: ${item['size']}"),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _removeFromCart(index),
-                      ),
-                    ),
-                  );
-                },
+                ),
               ),
-      ),
+            );
+          },
+        ),
+      ],
     );
   }
 
-  /// ========== BUILD UI ==========
   @override
   Widget build(BuildContext context) {
-    Map<String, List<Produk>> kategoriMap = {};
-    for (var p in semuaProduk) {
-      kategoriMap.putIfAbsent(p.getKategori(), () => []).add(p); // Polymorphism
-    }
-
-    double screenWidth = MediaQuery.of(context).size.width;
-    double itemWidth = screenWidth / 5; // tampil 5 produk per layar
-
+    final kategoriList = getKategoriUnik();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Produk Cowo"),
+        title: const Text("Produk Pria 👕"),
         backgroundColor: Colors.pinkAccent,
         actions: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_cart),
-                onPressed: _showCart,
-              ),
-              if (cartItems.isNotEmpty)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                        color: Colors.red, shape: BoxShape.circle),
-                    constraints:
-                        const BoxConstraints(minWidth: 18, minHeight: 18),
-                    child: Text(
-                      '${cartItems.length}',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.pushNamed(context, '/keranjang'); // route ke halaman keranjang
+            },
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: kategoriMap.entries.map((entry) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Text(entry.key,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                ),
-                SizedBox(
-                  height: itemWidth + 60,
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: entry.value.map((produk) {
-                        return GestureDetector(
-                          onTap: () => _openDetail(produk),
-                          child: Container(
-                            width: itemWidth,
-                            margin: const EdgeInsets.symmetric(horizontal: 2),
-                            child: Column(
-                              children: [
-                                AspectRatio(
-                                  aspectRatio: 1,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(8),
-                                    child: Image.asset(produk.gambar,
-                                        fit: BoxFit.cover), // Encapsulation
-                                  ),
-                                ),
-                                const SizedBox(height: 6),
-                                Text(
-                                  produk.nama, // Encapsulation
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                Text(
-                                  "Rp ${produk.harga}", // Encapsulation
-                                  style: const TextStyle(
-                                      color: Colors.green,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            );
-          }).toList(),
-        ),
+      body: ListView(
+        children: kategoriList.map((kategori) {
+          final produkPerKategori =
+              semuaProdukCowo.where((p) => p.kategori == kategori).toList();
+          return _buildGridKategori(context, kategori, produkPerKategori);
+        }).toList(),
       ),
     );
   }

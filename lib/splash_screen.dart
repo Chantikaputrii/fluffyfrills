@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'loginpage.dart'; // file LoginPage kamu yang kompleks
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'loginpage.dart';
+import 'dasboardpage.dart';
 
-void main() {
-  runApp(const MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: SplashScreen(),
-  ));
-}
-
-// =================== SPLASH SCREEN ===================
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -34,13 +29,44 @@ class _SplashScreenState extends State<SplashScreen>
     _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
     _controller.forward();
 
-    // Loading 3 detik sebelum pindah ke LoginPage
-    Timer(const Duration(seconds: 3), () {
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
+    // ✅ Cek login status ketika splash dimulai
+    _checkLoginStatus();
+  }
+
+  // 🔍 CEK STATUS LOGIN (Versi Final & Benar)
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Tampilkan splash dulu selama 3 detik
+    await Future.delayed(const Duration(seconds: 3));
+
+    // Setelah splash tampil → baru cek apakah user masih login
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (!mounted) return;
+
+    if (isLoggedIn) {
+      // Ambil data user
+      final userEmail = prefs.getString('savedEmail') ?? '';
+      final userName = prefs.getString('savedUsername') ?? '';
+
+      // Jika masih login → langsung ke dashboard
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => DashboardPage(
+            userEmail: userEmail,
+            userName: userName,
+          ),
+        ),
+      );
+    } else {
+      // Jika belum login atau sudah logout → ke halaman login
+      Navigator.pushReplacement(
+        context,
         MaterialPageRoute(builder: (_) => const LoginPage()),
       );
-    });
+    }
   }
 
   @override
@@ -49,6 +75,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
+  // =================== UI SPLASH ===================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
         height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFFFE4EC), Color(0xFFE1BEE7)], // pink pastel ke ungu pastel
+            colors: [Color(0xFFFFE4EC), Color(0xFFE1BEE7)], // pink pastel → ungu pastel
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -74,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               const SizedBox(height: 20),
 
-              // Teks utama dengan GoogleFonts.pinyonScript dan bayangan
+              // Judul Aplikasi
               Text(
                 "Fluffy Frills",
                 textAlign: TextAlign.center,
@@ -93,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen>
               ),
               const SizedBox(height: 12),
 
-              // Nama pembuat, lebih kecil dan abu-abu
+              // Nama Pembuat
               Text(
                 "- Chantika Putri Meunasah",
                 textAlign: TextAlign.center,
@@ -110,10 +137,12 @@ class _SplashScreenState extends State<SplashScreen>
                   ],
                 ),
               ),
-
               const SizedBox(height: 40),
-              const CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.pinkAccent),
+
+              // Animasi Loading
+              const SpinKitFadingCircle(
+                color: Colors.pinkAccent,
+                size: 60.0,
               ),
             ],
           ),

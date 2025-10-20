@@ -1,377 +1,336 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+import 'package:intl/intl.dart';
+import 'package:getwidget/getwidget.dart';
+import '/models/produk.dart';
+import '/widget/detail_produk.dart';
+import '../cart.dart';
 
-/// ================== MODEL PRODUK AKSESORIS ==================
-// Encapsulation: properti produk hanya bisa di-set melalui constructor
-abstract class ProdukAksesoris {
-  final String nama;
-  final String gambar;
-  final int harga;
-  final String deskripsi;
+// ================== MODEL PRODUK AKSESORIS ==================
+class ProdukAksesoris extends Produk {
+  final String kategori;
+  final double rating;
+  final int terjual;
 
-  ProdukAksesoris(this.nama, this.gambar, this.harga, this.deskripsi);
-
-  // Polymorphism: setiap subclass akan override method ini
-  String getKategori();
-}
-
-// Inheritance: Topi mewarisi properti & method dari ProdukAksesoris
-class Topi extends ProdukAksesoris {
-  Topi(String nama, String gambar, int harga, String deskripsi)
-      : super(nama, gambar, harga, deskripsi);
-
-  @override
-  String getKategori() => "Topi"; // Polymorphism
-}
-
-// Inheritance: Kacamata mewarisi properti & method dari ProdukAksesoris
-class Kacamata extends ProdukAksesoris {
-  Kacamata(String nama, String gambar, int harga, String deskripsi)
-      : super(nama, gambar, harga, deskripsi);
-
-  @override
-  String getKategori() => "Kacamata"; // Polymorphism
-}
-
-// Inheritance: JamTangan mewarisi properti & method dari ProdukAksesoris
-class JamTangan extends ProdukAksesoris {
-  JamTangan(String nama, String gambar, int harga, String deskripsi)
-      : super(nama, gambar, harga, deskripsi);
+  ProdukAksesoris(
+    String nama,
+    String gambar,
+    int harga,
+    this.kategori, {
+    required String deskripsi,
+    this.rating = 5.0,
+    this.terjual = 100,
+  }) : super(
+          nama: nama,
+          gambar: gambar,
+          harga: harga,
+          deskripsi: deskripsi,
+        );
 
   @override
-  String getKategori() => "Jam Tangan"; // Polymorphism
+  String getKategori() => "Aksesoris";
+
+  @override
+  String getInfo() => "$kategori: $nama - Rp$harga";
 }
 
-/// ================== DATA PRODUK AKSESORIS ==================
-// Global list produk aksesoris (Encapsulation)
+// ================== DATA PRODUK AKSESORIS ==================
 final List<ProdukAksesoris> semuaProdukAksesoris = [
-  Topi("Topi Baseball", "assets/image/topi1.jpeg", 75000,
-      "Topi baseball sporty cocok untuk sehari-hari."),
-  Topi("Topi Snapback", "assets/image/topi2.jpeg", 85000,
-      "Topi snapback keren untuk gaya kasual."),
-  Topi("Topi Bucket", "assets/image/topi3.jpeg", 65000,
-      "Topi bucket trendi cocok untuk outdoor."),
-  Topi("Topi Fedora", "assets/image/topi4.jpeg", 120000,
-      "Topi fedora elegan untuk tampilan stylish."),
-  Kacamata("Kacamata Hitam", "assets/image/kacamata1.jpeg", 95000,
-      "Kacamata hitam klasik untuk melindungi dari sinar matahari."),
-  Kacamata("Kacamata Fashion", "assets/image/kacamata2.jpeg", 110000,
-      "Kacamata stylish untuk menunjang gaya modern."),
-  Kacamata("Kacamata Bening", "assets/image/kacamata3.jpeg", 100000,
-      "Kacamata lensa bening cocok untuk gaya kasual."),
-  Kacamata("Kacamata Bulat", "assets/image/kacamata4.jpeg", 105000,
-      "Kacamata bulat retro untuk tampilan unik."),
-  JamTangan("Jam Analog", "assets/image/jam1.jpeg", 250000,
-      "Jam tangan analog klasik dan elegan."),
-  JamTangan("Jam Digital", "assets/image/jam2.jpeg", 230000,
-      "Jam digital sporty dengan fitur modern."),
-  JamTangan("Jam Kulit", "assets/image/jam3.jpeg", 280000,
-      "Jam tangan dengan tali kulit elegan."),
-  JamTangan("Jam Fashion", "assets/image/jam4.jpeg", 300000,
-      "Jam tangan stylish untuk menunjang penampilan."),
+  // 🧢 TOPI
+  ProdukAksesoris(
+    "Topi Baseball",
+    "assets/image/topi1.jpeg",
+    75000,
+    "Topi",
+    deskripsi: "Topi baseball sporty cocok untuk sehari-hari.",
+    rating: 4.7,
+    terjual: 120,
+  ),
+  ProdukAksesoris(
+    "Topi Snapback",
+    "assets/image/topi2.jpeg",
+    85000,
+    "Topi",
+    deskripsi: "Topi snapback keren untuk gaya kasual.",
+    rating: 4.5,
+    terjual: 95,
+  ),
+  ProdukAksesoris(
+    "Topi Bucket",
+    "assets/image/topi3.jpeg",
+    65000,
+    "Topi",
+    deskripsi: "Topi bucket trendi cocok untuk outdoor.",
+    rating: 4.6,
+    terjual: 80,
+  ),
+  ProdukAksesoris(
+    "Topi Fedora",
+    "assets/image/topi4.jpeg",
+    120000,
+    "Topi",
+    deskripsi: "Topi fedora elegan untuk tampilan stylish.",
+    rating: 4.8,
+    terjual: 60,
+  ),
+
+  // 🕶️ KACAMATA
+  ProdukAksesoris(
+    "Kacamata Hitam",
+    "assets/image/kacamata1.jpeg",
+    95000,
+    "Kacamata",
+    deskripsi:
+        "Kacamata hitam klasik untuk melindungi dari sinar matahari.",
+    rating: 4.7,
+    terjual: 110,
+  ),
+  ProdukAksesoris(
+    "Kacamata Fashion",
+    "assets/image/kacamata2.jpeg",
+    110000,
+    "Kacamata",
+    deskripsi: "Kacamata stylish untuk menunjang gaya modern.",
+    rating: 4.8,
+    terjual: 90,
+  ),
+  ProdukAksesoris(
+    "Kacamata Bening",
+    "assets/image/kacamata3.jpeg",
+    100000,
+    "Kacamata",
+    deskripsi: "Kacamata lensa bening cocok untuk gaya kasual.",
+    rating: 4.5,
+    terjual: 75,
+  ),
+  ProdukAksesoris(
+    "Kacamata Bulat",
+    "assets/image/kacamata4.jpeg",
+    105000,
+    "Kacamata",
+    deskripsi: "Kacamata bulat retro untuk tampilan unik.",
+    rating: 4.6,
+    terjual: 80,
+  ),
+
+  // ⌚ JAM TANGAN
+  ProdukAksesoris(
+    "Jam Analog",
+    "assets/image/jam1.jpeg",
+    250000,
+    "Jam Tangan",
+    deskripsi: "Jam tangan analog klasik dan elegan.",
+    rating: 4.8,
+    terjual: 70,
+  ),
+  ProdukAksesoris(
+    "Jam Digital",
+    "assets/image/jam2.jpeg",
+    230000,
+    "Jam Tangan",
+    deskripsi: "Jam digital sporty dengan fitur modern.",
+    rating: 4.7,
+    terjual: 60,
+  ),
+  ProdukAksesoris(
+    "Jam Kulit",
+    "assets/image/jam3.jpeg",
+    280000,
+    "Jam Tangan",
+    deskripsi: "Jam tangan dengan tali kulit elegan.",
+    rating: 4.9,
+    terjual: 50,
+  ),
+  ProdukAksesoris(
+    "Jam Fashion",
+    "assets/image/jam4.jpeg",
+    300000,
+    "Jam Tangan",
+    deskripsi: "Jam tangan stylish untuk menunjang penampilan.",
+    rating: 4.8,
+    terjual: 65,
+  ),
 ];
 
-/// ================== HALAMAN PRODUK AKSESORIS ==================
-class ProdukAksesorisPage extends StatefulWidget {
-  final Function(Map<String, dynamic>) onAddToCart; // Encapsulation
+// ================== HALAMAN PRODUK AKSESORIS ==================
+class ProdukAksesorisPage extends StatelessWidget {
+  final Function(Map<String, dynamic>) onAddToCart;
+
   const ProdukAksesorisPage({Key? key, required this.onAddToCart})
       : super(key: key);
 
-  @override
-  State<ProdukAksesorisPage> createState() => _ProdukAksesorisPageState();
-}
+  List<String> getKategoriUnik() =>
+      semuaProdukAksesoris.map((p) => p.kategori).toSet().toList();
 
-class _ProdukAksesorisPageState extends State<ProdukAksesorisPage> {
-  final List<ProdukAksesoris> semuaProduk = semuaProdukAksesoris; // Encapsulation
-  String query = ""; // Encapsulation
-  List<Map<String, dynamic>> cartItems = []; // Encapsulation
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  String formatHarga(int harga) {
+    final formatter =
+        NumberFormat.currency(locale: 'id', symbol: 'Rp', decimalDigits: 0);
+    return formatter.format(harga);
+  }
 
-  /// ================== HAPUS ITEM DI CART ==================
-  void _removeFromCart(int index) {
-    final removedItem = cartItems[index];
-    cartItems.removeAt(index);
-    _listKey.currentState?.removeItem(
-      index,
-      (context, animation) => SizeTransition(
-        sizeFactor: animation,
-        child: ListTile(
-          leading: AspectRatio(
-            aspectRatio: 1,
-            child: Image.asset(removedItem['image'], fit: BoxFit.cover),
+  Widget _buildGridKategori(
+      BuildContext context, String kategori, List<ProdukAksesoris> produkList) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Text(
+            kategori,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          title: Text(removedItem['name']),
-          subtitle: Text(
-              "Rp ${removedItem['price']} | Warna: ${removedItem['warna']}"),
         ),
-      ),
-      duration: const Duration(milliseconds: 300),
-    );
-    setState(() {});
-  }
-
-  /// ================== SHOW CART ==================
-  void _showCart() {
-    showModalBottomSheet(
-      isScrollControlled: true,
-      context: context,
-      builder: (_) => Container(
-        height: MediaQuery.of(context).size.height * 0.8,
-        padding: const EdgeInsets.all(16),
-        child: cartItems.isEmpty
-            ? const Center(child: Text("Keranjang masih kosong 🛒"))
-            : AnimatedList(
-                key: _listKey,
-                initialItemCount: cartItems.length,
-                itemBuilder: (context, index, animation) {
-                  final item = cartItems[index];
-                  return SizeTransition(
-                    sizeFactor: animation,
-                    child: ListTile(
-                      leading: AspectRatio(
-                        aspectRatio: 1,
-                        child: Image.asset(item['image'], fit: BoxFit.cover),
-                      ),
-                      title: Text(item['name']),
-                      subtitle: Text(
-                          "Rp ${item['price']} | Warna: ${item['warna']}"),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => _removeFromCart(index),
-                      ),
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.65,
+          ),
+          itemCount: produkList.length,
+          itemBuilder: (context, index) {
+            final produk = produkList[index];
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DetailProdukPage(
+                      produk: produk,
+                      onAddToCart: (cartItem) {
+                        Cart().addItem(cartItem);
+                      },
                     ),
-                  );
-                },
-              ),
-      ),
-    );
-  }
-
-  /// ================== DETAIL PRODUK ==================
-  void _openDetail(ProdukAksesoris produk) {
-    final List<String> warnaPilihan = [
-      "Putih",
-      "Cream",
-      "Hitam",
-      "Navy",
-      "Maroon"
-    ];
-    String? selectedWarna;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) {
-        return StatefulBuilder(
-          builder: (context, setStateModal) => Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.asset(produk.gambar,
-                      height: 200, fit: BoxFit.cover),
-                ),
-                const SizedBox(height: 12),
-                Text(produk.nama,
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
-                Text("Rp ${produk.harga}",
-                    style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(produk.deskripsi),
-                const SizedBox(height: 12),
-                const Text("Pilih Warna:",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                Wrap(
-                  spacing: 10,
-                  children: warnaPilihan.map((w) {
-                    final isSelected = selectedWarna == w;
-                    return ChoiceChip(
-                      label: Text(w),
-                      selected: isSelected,
-                      selectedColor: Colors.pinkAccent,
-                      onSelected: (_) =>
-                          setStateModal(() => selectedWarna = w), // Pilih warna
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 20),
-                Row(
+                  ),
+                );
+              },
+              child: Card(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                elevation: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Expanded(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.shopping_cart),
-                        label: const Text("Keranjang"),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange),
-                        onPressed: () {
-                          if (selectedWarna != null) {
-                            cartItems.add({
-                              "name": produk.nama,
-                              "price": produk.harga,
-                              "image": produk.gambar,
-                              "warna": selectedWarna!,
-                              "kategori": produk.getKategori(), // Polymorphism
-                            });
-                            widget.onAddToCart(cartItems.last);
-                            Navigator.pop(context);
-                          }
-                        },
+                      child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.vertical(top: Radius.circular(12)),
+                        child: Image.asset(
+                          produk.gambar,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.payment),
-                        label: const Text("Beli Sekarang"),
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.pinkAccent),
-                        onPressed: () {
-                          if (selectedWarna != null) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                    "Beli ${produk.nama} berhasil 🚀")));
-                          }
-                        },
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        produk.nama,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 12),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: Text(
+                        formatHarga(produk.harga),
+                        style: const TextStyle(
+                            color: Colors.pinkAccent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Center(
+                      child: RatingStars(
+                        value: produk.rating,
+                        starCount: 5,
+                        starSize: 18,
+                        starColor: Colors.amber,
+                        valueLabelVisibility: false,
+                        maxValue: 5,
+                        starSpacing: 1,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Center(
+                      child: Text(
+                        produk.rating.toStringAsFixed(1),
+                        style: const TextStyle(
+                            fontSize: 10, fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    Text(
+                      "${produk.terjual}+ Terjual",
+                      style:
+                          const TextStyle(fontSize: 10, color: Colors.grey),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: GFButton(
+                        onPressed: () {
+                          Cart().addItem({
+                            "name": produk.nama,
+                            "price": produk.harga,
+                            "image": produk.gambar,
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  "${produk.nama} ditambahkan ke keranjang!"),
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+                        },
+                        text: "Tambah",
+                        color: Colors.pinkAccent,
+                        fullWidthButton: true,
+                        size: GFSize.SMALL,
+                        shape: GFButtonShape.pills,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
                   ],
                 ),
-                const SizedBox(height: 20),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // 🔎 Filter produk sesuai query search
-    final produkFiltered = semuaProduk.where((p) {
-      final lowerQuery = query.toLowerCase();
-      return p.nama.toLowerCase().contains(lowerQuery) ||
-          p.getKategori().toLowerCase().contains(lowerQuery) ||
-          p.deskripsi.toLowerCase().contains(lowerQuery);
-    }).toList();
-
-    // Kelompokkan produk berdasarkan kategori
-    Map<String, List<ProdukAksesoris>> kategoriMap = {};
-    for (var p in produkFiltered) {
-      kategoriMap.putIfAbsent(p.getKategori(), () => []).add(p); // Polymorphism
-    }
-
-    double screenWidth = MediaQuery.of(context).size.width;
-    double itemWidth = screenWidth / 4.5; // Lebar tiap item
-
+    final kategoriList = getKategoriUnik();
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Produk Aksesoris"),
+        title: const Text("Produk Aksesoris 💍"),
         backgroundColor: Colors.pinkAccent,
         actions: [
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              IconButton(
-                  icon: const Icon(Icons.shopping_cart), onPressed: _showCart),
-              if (cartItems.isNotEmpty)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                        color: Colors.red, shape: BoxShape.circle),
-                    child: Text('${cartItems.length}',
-                        style: const TextStyle(
-                            color: Colors.white, fontSize: 11)), // Jumlah item
-                  ),
-                )
-            ],
+          IconButton(
+            icon: const Icon(Icons.shopping_cart),
+            onPressed: () {
+              Navigator.pushNamed(context, '/keranjang');
+            },
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // 🔎 Search bar
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Cari aksesoris...",
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
-              ),
-              onChanged: (val) => setState(() => query = val),
-            ),
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: kategoriMap.entries.map((entry) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Text(entry.key,
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
-                      ),
-                      SizedBox(
-                        height: itemWidth + 60,
-                        child: ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: entry.value.map((produk) {
-                            return GestureDetector(
-                              onTap: () => _openDetail(produk),
-                              child: Container(
-                                width: itemWidth,
-                                margin:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                                child: Column(
-                                  children: [
-                                    AspectRatio(
-                                      aspectRatio: 1,
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.asset(produk.gambar,
-                                            fit: BoxFit.cover),
-                                      ),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(produk.nama,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis),
-                                    Text("Rp ${produk.harga}",
-                                        style: const TextStyle(
-                                            color: Colors.green,
-                                            fontWeight: FontWeight.bold)),
-                                  ],
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-                  );
-                }).toList(),
-              ),
-            ),
-          ),
-        ],
+      body: ListView(
+        children: kategoriList.map((kategori) {
+          final produkPerKategori =
+              semuaProdukAksesoris.where((p) => p.kategori == kategori).toList();
+          return _buildGridKategori(context, kategori, produkPerKategori);
+        }).toList(),
       ),
     );
   }

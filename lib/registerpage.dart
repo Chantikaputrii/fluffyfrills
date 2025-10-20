@@ -1,26 +1,31 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dasboardpage.dart';
-import 'registerpage.dart';
+import 'loginpage.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage>
+class _RegisterPageState extends State<RegisterPage>
     with SingleTickerProviderStateMixin {
   late AnimationController _circleCtrl;
   final List<Bubble> _bubbles = [];
   final Random _rnd = Random();
 
-  final _usernameController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
+  final _confirmPasswordController = TextEditingController();
+
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   @override
   void initState() {
@@ -31,7 +36,7 @@ class _LoginPageState extends State<LoginPage>
     _loadBubbles();
   }
 
-  /// 🫧 Background animasi bubble
+  /// 🫧 Bubbles background
   void _loadBubbles() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final size = MediaQuery.of(context).size;
@@ -56,61 +61,58 @@ class _LoginPageState extends State<LoginPage>
     });
   }
 
-  /// 🔐 Fungsi login
-  Future<void> _submit() async {
-    final username = _usernameController.text.trim();
-    final password = _passwordController.text.trim();
+  /// 🧁 Fungsi Register
+  Future<void> _register() async {
+    String name = _nameController.text.trim();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text.trim();
+    String confirmPassword = _confirmPasswordController.text.trim();
+
+    if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Semua kolom wajib diisi!")),
+      );
+      return;
+    }
+
+    if (!email.contains("@") || !email.contains(".")) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Format email tidak valid!")),
+      );
+      return;
+    }
+
+    if (password.length < 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Password minimal 8 karakter!")),
+      );
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Konfirmasi password tidak cocok!")),
+      );
+      return;
+    }
 
     final prefs = await SharedPreferences.getInstance();
-    final savedUsername = prefs.getString('savedUsername');
-    final savedPassword = prefs.getString('savedPassword');
-    final savedEmail = prefs.getString('savedEmail') ?? '';
-
-    if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username dan password tidak boleh kosong')),
-      );
-      return;
-    }
-
-    if (savedUsername == null || savedPassword == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Belum ada akun terdaftar. Silakan daftar dulu.'),
-        ),
-      );
-      return;
-    }
-
-    if (username != savedUsername || password != savedPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Username atau password salah')),
-      );
-      return;
-    }
-
-    // ✅ Simpan status login agar Splash tahu user login
+    await prefs.setString('savedUsername', name);
+    await prefs.setString('savedEmail', email);
+    await prefs.setString('savedPassword', password);
     await prefs.setBool('isLoggedIn', true);
 
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 2));
     setState(() => _isLoading = false);
 
     if (!mounted) return;
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (_) => DashboardPage(
-        userEmail: savedEmail,
-        userName: username,
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DashboardPage(userName: name, userEmail: email),
       ),
-    ));
-  }
-
-  @override
-  void dispose() {
-    _circleCtrl.dispose();
-    _usernameController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+    );
   }
 
   Widget _buildCircle(double size, List<Color> colors, double opacity) {
@@ -144,7 +146,7 @@ class _LoginPageState extends State<LoginPage>
             ),
           ),
 
-          // 🫧 Bubble animation
+          // 🫧 Bubble animation layer
           ..._bubbles.map((bubble) {
             return AnimatedBuilder(
               animation: _circleCtrl,
@@ -165,10 +167,10 @@ class _LoginPageState extends State<LoginPage>
             );
           }).toList(),
 
-          // 🩰 Login form
+          // 💖 Register form
           Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -178,11 +180,11 @@ class _LoginPageState extends State<LoginPage>
                     width: 360,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withOpacity(0.85),
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withOpacity(0.05),
                           blurRadius: 15,
                           spreadRadius: 3,
                         ),
@@ -190,21 +192,38 @@ class _LoginPageState extends State<LoginPage>
                     ),
                     child: Column(
                       children: [
-                        const Text(
-                          "User Login",
-                          style: TextStyle(
+                        Text(
+                          "Create Account",
+                          style: GoogleFonts.poppins(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: Colors.black87,
                           ),
                         ),
                         const SizedBox(height: 16),
 
-                        // Username
+                        // Nama
                         TextField(
-                          controller: _usernameController,
+                          controller: _nameController,
                           decoration: InputDecoration(
-                            hintText: "Username",
+                            hintText: "Nama Lengkap",
                             prefixIcon: const Icon(Icons.person),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Email
+                        TextField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: InputDecoration(
+                            hintText: "Email",
+                            prefixIcon: const Icon(Icons.email),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(30),
                             ),
@@ -222,11 +241,9 @@ class _LoginPageState extends State<LoginPage>
                             hintText: "Password",
                             prefixIcon: const Icon(Icons.lock),
                             suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
+                              icon: Icon(_obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility),
                               onPressed: () => setState(
                                   () => _obscurePassword = !_obscurePassword),
                             ),
@@ -237,14 +254,37 @@ class _LoginPageState extends State<LoginPage>
                             fillColor: Colors.grey[200],
                           ),
                         ),
+                        const SizedBox(height: 16),
+
+                        // Konfirmasi Password
+                        TextField(
+                          controller: _confirmPasswordController,
+                          obscureText: _obscureConfirm,
+                          decoration: InputDecoration(
+                            hintText: "Konfirmasi Password",
+                            prefixIcon: const Icon(Icons.lock_outline),
+                            suffixIcon: IconButton(
+                              icon: Icon(_obscureConfirm
+                                  ? Icons.visibility_off
+                                  : Icons.visibility),
+                              onPressed: () => setState(
+                                  () => _obscureConfirm = !_obscureConfirm),
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            filled: true,
+                            fillColor: Colors.grey[200],
+                          ),
+                        ),
                         const SizedBox(height: 20),
 
-                        // Tombol login
+                        // Tombol register
                         SizedBox(
                           width: double.infinity,
                           height: 48,
                           child: ElevatedButton(
-                            onPressed: _isLoading ? null : _submit,
+                            onPressed: _isLoading ? null : _register,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.pinkAccent,
                               shape: RoundedRectangleBorder(
@@ -255,7 +295,7 @@ class _LoginPageState extends State<LoginPage>
                                 ? const CircularProgressIndicator(
                                     color: Colors.white, strokeWidth: 2)
                                 : const Text(
-                                    "LOGIN",
+                                    "REGISTER",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -265,37 +305,16 @@ class _LoginPageState extends State<LoginPage>
                         ),
                         const SizedBox(height: 16),
 
-                        // ke register
+                        // Punya akun
                         TextButton(
-                          onPressed: () async {
-                            final result = await Navigator.push(
+                          onPressed: () {
+                            Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(
-                                  builder: (_) => const RegisterPage()),
+                              MaterialPageRoute(builder: (_) => const LoginPage()),
                             );
-
-                            if (result == true && mounted) {
-                              final prefs =
-                                  await SharedPreferences.getInstance();
-                              final username =
-                                  prefs.getString('savedUsername') ?? '';
-                              final email =
-                                  prefs.getString('savedEmail') ?? '';
-                              await prefs.setBool('isLoggedIn', true);
-
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => DashboardPage(
-                                    userEmail: email,
-                                    userName: username,
-                                  ),
-                                ),
-                              );
-                            }
                           },
                           child: const Text(
-                            "Belum punya akun? Daftar di sini",
+                            "Sudah punya akun? Login di sini",
                             style: TextStyle(color: Colors.pinkAccent),
                           ),
                         ),
