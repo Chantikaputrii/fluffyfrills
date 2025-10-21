@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
+
+// Import model
 import '/models/produk.dart';
 import '/models/produkcowo.dart';
 import '/models/produkcewe.dart';
@@ -17,11 +19,15 @@ import 'detail_produkaksesoris.dart';
 class DetailProdukPage extends StatefulWidget {
   final Produk produk;
   final Function(Map<String, dynamic>) onAddToCart;
+  final String? userEmail;
+  final String? userName;
 
   const DetailProdukPage({
     Key? key,
     required this.produk,
     required this.onAddToCart,
+    this.userEmail,
+    this.userName,
   }) : super(key: key);
 
   @override
@@ -88,7 +94,9 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   Text(
                     widget.produk.nama,
                     style: const TextStyle(
-                        fontSize: 22, fontWeight: FontWeight.bold),
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(
@@ -101,7 +109,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   ),
                   const SizedBox(height: 8),
 
-                  // ⭐ Rating + Terjual
                   if (widget.produk is ProdukCowo)
                     _buildRatingTerjual(widget.produk as ProdukCowo),
                   if (widget.produk is ProdukCewe)
@@ -147,99 +154,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             const SizedBox(height: 20),
 
             // 🔢 Pilih Jumlah Barang
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Jumlah:",
-                    style:
-                        TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Tombol -, Angka, +
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      // Tombol -
-                      GestureDetector(
-                        onTap: () {
-                          if (quantity > 1) {
-                            setState(() => quantity--);
-                          }
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.pinkAccent,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              "-", // lebih jelas daripada icon remove
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 32, // lebih besar biar kelihatan
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 14),
-
-                      // Angka jumlah
-                      Container(
-                        width: 55,
-                        height: 40,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border:
-                              Border.all(color: Colors.pinkAccent, width: 1.5),
-                        ),
-                        child: Text(
-                          quantity.toString(),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(width: 14),
-
-                      // Tombol +
-                      GestureDetector(
-                        onTap: () {
-                          setState(() => quantity++);
-                        },
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            color: Colors.pinkAccent,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: const Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            _buildJumlahBarang(),
 
             const SizedBox(height: 100),
           ],
@@ -247,102 +162,73 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       ),
 
       // 🛒 Tombol bawah
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-          border:
-              const Border(top: BorderSide(color: Colors.grey, width: 0.1)),
-        ),
-        child: Row(
-          children: [
-            // Tombol Keranjang
-            Expanded(
-              child: GFButton(
-                onPressed: () {
-                  if ((selectedColor == null &&
-                          widget.produk.getKategori() != "aksesoris") ||
-                      selectedSize == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text(
-                              "Pilih warna dan ukuran terlebih dahulu!")),
-                    );
-                    return;
-                  }
-                  final item = {
-                    "name": widget.produk.nama,
-                    "price": widget.produk.harga,
-                    "image": widget.produk.gambar,
-                    "color": selectedColor,
-                    "size": selectedSize,
-                    "quantity": quantity,
-                  };
-                  widget.onAddToCart(item);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(
-                            "${widget.produk.nama} ditambahkan ke keranjang 🛒")),
-                  );
-                },
-                color: const Color(0xFFF49906),
-                fullWidthButton: true,
-                shape: GFButtonShape.pills,
-                size: GFSize.LARGE,
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("🛒", style: TextStyle(fontSize: 18)),
-                    SizedBox(width: 8),
-                    Text(
-                      "Keranjang",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16),
-                    ),
-                  ],
+      bottomNavigationBar: _buildBottomButtons(context),
+    );
+  }
+
+  // 🔧 Widget Jumlah Barang
+  Widget _buildJumlahBarang() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Jumlah:",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              _buildQtyButton("-", () {
+                if (quantity > 1) setState(() => quantity--);
+              }),
+              const SizedBox(width: 14),
+              Container(
+                width: 55,
+                height: 40,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.pinkAccent, width: 1.5),
+                ),
+                child: Text(
+                  quantity.toString(),
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 12),
+              const SizedBox(width: 14),
+              _buildQtyButton("+", () => setState(() => quantity++)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
-            // Tombol Beli Sekarang
-            Expanded(
-              child: GFButton(
-                onPressed: () {
-                  if ((selectedColor == null &&
-                          widget.produk.getKategori() != "aksesoris") ||
-                      selectedSize == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                          content: Text(
-                              "Pilih warna dan ukuran terlebih dahulu!")),
-                    );
-                    return;
-                  }
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(
-                            "Berhasil membeli ${widget.produk.nama} 🎉")),
-                  );
-                },
-                text: "Beli Sekarang",
-                textColor: Colors.white,
-                color: Colors.pinkAccent,
-                fullWidthButton: true,
-                shape: GFButtonShape.pills,
-                size: GFSize.LARGE,
-              ),
+  Widget _buildQtyButton(String label, VoidCallback onPressed) {
+    return Material(
+      color: Colors.pinkAccent,
+      borderRadius: BorderRadius.circular(10),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(10),
+        onTap: onPressed,
+        child: Container(
+          width: 40,
+          height: 40,
+          alignment: Alignment.center,
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -351,7 +237,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
   // ⭐ Widget Rating dan Terjual
   Widget _buildRatingTerjual(dynamic produk) {
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         RatingStars(
           value: produk.rating,
@@ -380,43 +265,181 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     );
   }
 
-  // 🔧 Widget Kategori Spesifik
+  // 🔧 Widget kategori spesifik
   Widget _buildKategoriSpesifik() {
     if (widget.produk is ProdukCowo) {
-      final produkCowo = widget.produk as ProdukCowo;
+      final produk = widget.produk as ProdukCowo;
       return DetailProdukCowo(
-        kategori: produkCowo.kategori,
+        kategori: produk.kategori,
         onSizeSelected: (size) => setState(() => selectedSize = size),
         onColorSelected: (color) => setState(() => selectedColor = color),
       );
     }
 
     if (widget.produk is ProdukCewe) {
-      final produkCewe = widget.produk as ProdukCewe;
+      final produk = widget.produk as ProdukCewe;
       return DetailProdukCewe(
-        kategori: produkCewe.kategori,
+        kategori: produk.kategori,
         onSizeSelected: (size) => setState(() => selectedSize = size),
         onColorSelected: (color) => setState(() => selectedColor = color),
       );
     }
 
     if (widget.produk is ProdukAnak) {
-      final produkAnak = widget.produk as ProdukAnak;
+      final produk = widget.produk as ProdukAnak;
       return DetailProdukAnak(
-        kategori: produkAnak.kategori,
+        kategori: produk.kategori,
         onSizeSelected: (size) => setState(() => selectedSize = size),
         onColorSelected: (color) => setState(() => selectedColor = color),
       );
     }
 
     if (widget.produk is ProdukAksesoris) {
-      final produkAksesoris = widget.produk as ProdukAksesoris;
+      final produk = widget.produk as ProdukAksesoris;
       return DetailProdukAksesoris(
-        kategori: produkAksesoris.kategori,
+        kategori: produk.kategori,
         onColorSelected: (color) => setState(() => selectedColor = color),
       );
     }
 
     return const SizedBox();
+  }
+
+  // 🛒 Tombol bawah
+  Widget _buildBottomButtons(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+        border: const Border(top: BorderSide(color: Colors.grey, width: 0.1)),
+      ),
+      child: Row(
+        children: [
+          // Tombol Tambah ke Keranjang
+          Expanded(
+            child: GFButton(
+              onPressed: () {
+                if ((selectedColor == null &&
+                        widget.produk.getKategori() != "aksesoris") ||
+                    selectedSize == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content:
+                          Text("Pilih warna dan ukuran terlebih dahulu!"),
+                    ),
+                  );
+                  return;
+                }
+
+                // Tambah ke keranjang
+                for (int i = 0; i < quantity; i++) {
+                  final item = {
+                    "name": widget.produk.nama,
+                    "price": widget.produk.harga,
+                    "image": widget.produk.gambar,
+                    "color": selectedColor,
+                    "size": selectedSize,
+                  };
+                  widget.onAddToCart(item);
+                }
+
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                        "$quantity x ${widget.produk.nama} ditambahkan ke keranjang 🛒"),
+                  ),
+                );
+
+                setState(() => quantity = 1);
+              },
+              color: const Color(0xFFF49906),
+              fullWidthButton: true,
+              shape: GFButtonShape.pills,
+              size: GFSize.LARGE,
+              child: const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text("🛒", style: TextStyle(fontSize: 18)),
+                  SizedBox(width: 8),
+                  Text(
+                    "Keranjang",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+
+          // Tombol Beli Sekarang (tanpa login)
+          Expanded(
+            child: GFButton(
+              onPressed: () async {
+                if ((selectedColor == null &&
+                        widget.produk.getKategori() != "aksesoris") ||
+                    selectedSize == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content:
+                          Text("Pilih warna dan ukuran terlebih dahulu!"),
+                    ),
+                  );
+                  return;
+                }
+
+                // Buat list item checkout
+                List<Map<String, dynamic>> checkoutItems = [];
+                double totalPrice = 0;
+
+                for (int i = 0; i < quantity; i++) {
+                  checkoutItems.add({
+                    "name": widget.produk.nama,
+                    "price": widget.produk.harga,
+                    "image": widget.produk.gambar,
+                    "color": selectedColor,
+                    "size": selectedSize,
+                  });
+                  totalPrice += widget.produk.harga;
+                }
+
+                // Navigasi langsung ke halaman checkout tanpa cek login
+                Navigator.pushNamed(
+                  context,
+                  '/checkout',
+                  arguments: {
+                    'items': checkoutItems,
+                    'totalPrice': totalPrice,
+                    'fromDetail': true,
+                  },
+                ).then((value) {
+                  setState(() {
+                    quantity = 1;
+                    selectedSize = null;
+                    selectedColor = null;
+                  });
+                });
+              },
+              text: "Beli Sekarang",
+              textColor: Colors.white,
+              color: Colors.pinkAccent,
+              fullWidthButton: true,
+              shape: GFButtonShape.pills,
+              size: GFSize.LARGE,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

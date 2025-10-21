@@ -39,9 +39,46 @@ class Cart {
     }
   }
 
+  // Menghapus beberapa item sekaligus (untuk checkout)
+  void removeItems(List<Map<String, dynamic>> itemsToRemove) {
+    for (var item in itemsToRemove) {
+      _items.remove(item);
+    }
+    itemCountNotifier.value = _items.length;
+  }
+
   // Menghapus semua item
   void clear() {
     _items.clear();
     itemCountNotifier.value = 0; // update notifier
+  }
+
+  // Cek apakah item sudah ada di keranjang
+  bool containsItem(Map<String, dynamic> item) {
+    return _items.any((i) => 
+      i['name'] == item['name'] && 
+      i['size'] == item['size'] && 
+      i['color'] == item['color']
+    );
+  }
+
+  // Hitung total harga semua item
+  double get totalPrice {
+    double total = 0;
+    for (var item in _items) {
+      total += (item['price'] as num).toDouble();
+    }
+    return total;
+  }
+
+  // Hitung total harga item yang dipilih
+  double getTotalPrice(List<int> selectedIndices) {
+    double total = 0;
+    for (int i in selectedIndices) {
+      if (i >= 0 && i < _items.length) {
+        total += (_items[i]['price'] as num).toDouble();
+      }
+    }
+    return total;
   }
 }

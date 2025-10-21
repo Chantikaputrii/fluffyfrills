@@ -9,16 +9,16 @@ import 'models/produkanak.dart';
 import 'models/produkaksesoris.dart';
 import 'package:flutter_rating_stars/flutter_rating_stars.dart';
 import 'widget/detail_produk.dart';
-import 'cart.dart'; // <- import Cart singleton
+import 'cart.dart';
 
 class BerandaPage extends StatelessWidget {
-  final String userName;     // Tambahkan userName
+  final String userName;
   final String userEmail;
   final String searchQuery;
 
   const BerandaPage({
     Key? key,
-    required this.userName,   // wajib ada saat buat instance
+    required this.userName,
     required this.userEmail,
     this.searchQuery = "",
   }) : super(key: key);
@@ -85,7 +85,6 @@ class BerandaPage extends StatelessWidget {
 
             return GestureDetector(
               onTap: () {
-                // Tetap bisa akses detail produk
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -167,7 +166,6 @@ class BerandaPage extends StatelessWidget {
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                       child: GFButton(
                         onPressed: () {
-                          // Tambahkan ke keranjang
                           Cart().addItem({
                             'name': produkAsli.nama,
                             'price': produkAsli.harga,
@@ -251,7 +249,7 @@ class BerandaPage extends StatelessWidget {
                 size: 20,
                 child: Icon(Icons.person, color: Colors.white, size: 14),
               ),
-              titleText: "Halo, $userName 💖",  // tampilkan nama user
+              titleText: "Halo, $userName 💖",
               subTitleText: userEmail,
             ),
           ),
@@ -280,14 +278,19 @@ class BerandaPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Lihat Semua Produk
+          // ✅ DIPERBAIKI - Tombol Lihat Semua Produk
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: GFButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const ProdukPage()),
+                  MaterialPageRoute(
+                    builder: (_) => const ProdukPage(
+                      searchQuery: "",
+                      showAllProducts: true, // ✅ PARAMETER INI YANG MEMBUAT TAMPIL SEMUA PRODUK
+                    ),
+                  ),
                 );
               },
               text: "Lihat Semua Produk",

@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dasboardpage.dart'; // ✅ ganti import agar bisa balik ke Dashboard
 
 class CheckoutPage extends StatefulWidget {
+  
   final List<Map<String, dynamic>> items;
   final double totalPrice;
   final String userEmail;
@@ -35,10 +35,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.userName; // otomatis isi nama user
+    _nameController.text = widget.userName;
   }
 
-  /// ✅ Simpan pesanan ke SharedPreferences
+  /// Simpan pesanan ke SharedPreferences
   Future<void> _saveOrder() async {
     final prefs = await SharedPreferences.getInstance();
     List<String> existingOrders = prefs.getStringList('orders') ?? [];
@@ -212,31 +212,22 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           backgroundColor: const Color(0xFFFF7AA2),
                         ),
                         onPressed: () async {
+                          // Tutup dialog
                           Navigator.pop(context);
+                          
+                          // Simpan pesanan
                           await _saveOrder();
 
-                          // ✅ Setelah simpan, balik ke DashboardPage langsung tab Pesanan
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => DashboardPage(
-                                userEmail: widget.userEmail,
-                                userName: widget.userName,
-                                initialIndex: 2, // 🔥 Langsung buka tab Pesanan
-                              ),
-                            ),
-                            (route) => false,
-                          );
+                          // ✅ PERBAIKAN: Pop dengan return true untuk memberitahu CartPage
+                          Navigator.pop(context, true);
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(_paymentMethod == 'transfer'
-                                  ? "Silakan lakukan transfer ke rekening toko 💳"
-                                  : "Pesanan dikonfirmasi, bayar di tempat (COD) 💵"),
-                            ),
-                          );
+                          // Tampilkan snackbar di halaman sebelumnya (CartPage/DashboardPage)
+                          // Note: Snackbar akan muncul di halaman yang ada di bawah CheckoutPage
                         },
-                        child: const Text("Bayar Sekarang"),
+                        child: const Text(
+                          "Bayar Sekarang",
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),

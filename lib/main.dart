@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'splash_screen.dart';
 import 'loginpage.dart';
-import 'dasboardpage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +22,7 @@ class FluffyFrills extends StatelessWidget {
       // SplashScreen muncul pertama kali
       home: const SplashScreen(),
       routes: {
+        
         '/login': (context) => const LoginPage(),
       },
     );

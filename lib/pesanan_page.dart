@@ -4,7 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 class PesananPage extends StatefulWidget {
-  const PesananPage({Key? key}) : super(key: key);
+  final String userName;
+  final String userEmail;
+
+  const PesananPage({
+    Key? key,
+    required this.userName,
+    required this.userEmail,
+  }) : super(key: key);
 
   @override
   State<PesananPage> createState() => _PesananPageState();
@@ -43,6 +50,7 @@ class _PesananPageState extends State<PesananPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFFF7AA2),
         centerTitle: true,
+        automaticallyImplyLeading: false, // Menghapus tombol back
         title: const Text(
           "Pesanan Saya 🧾",
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

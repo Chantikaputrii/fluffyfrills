@@ -47,6 +47,18 @@ class _ProfilPageState extends State<ProfilPage> {
       initialDate: _selectedDate ?? DateTime(2000),
       firstDate: DateTime(1900),
       lastDate: now,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Colors.pinkAccent,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       final prefs = await SharedPreferences.getInstance();
@@ -69,18 +81,28 @@ class _ProfilPageState extends State<ProfilPage> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Data Profil Tersimpan'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 28),
+            SizedBox(width: 8),
+            Text('Berhasil Disimpan'),
+          ],
+        ),
         content: Text(
-          'Nama: ${widget.userName}\n'
-          'Email: ${widget.userEmail}\n'
-          'Telepon: ${_phoneController.text}\n'
-          'Tanggal Lahir: ${_selectedDate != null ? "${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}" : "-"}\n'
-          'Gender: $_gender',
+          'Data profil Anda telah berhasil diperbarui.',
+          style: TextStyle(color: Colors.grey[700]),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: const Text(
+              'OK',
+              style: TextStyle(
+                color: Colors.pinkAccent,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           )
         ],
       ),
@@ -96,92 +118,251 @@ class _ProfilPageState extends State<ProfilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Profil Saya"),
+      backgroundColor: Colors.grey[100],
+      appBar: GFAppBar(
+        automaticallyImplyLeading: false,
+        title: const Text(
+          "Profil Saya",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.pinkAccent,
+        elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Text(
-                widget.userName,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+            // Header dengan Avatar menggunakan GFAvatar
+            Container(
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Colors.pinkAccent,
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
                 ),
               ),
-            ),
-            Center(
-              child: Text(
-                widget.userEmail,
-                style: const TextStyle(color: Colors.grey),
+              padding: const EdgeInsets.only(bottom: 32, top: 16),
+              child: Column(
+                children: [
+                  GFAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.white,
+                    child: Text(
+                      widget.userName.isNotEmpty
+                          ? widget.userName[0].toUpperCase()
+                          : 'U',
+                      style: const TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.pinkAccent,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    widget.userName,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    widget.userEmail,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ),
+
             const SizedBox(height: 24),
 
-            // Nomor Telepon
-            const Text('Nomor Telepon'),
-            const SizedBox(height: 4),
-            GFTextField(
-              controller: _phoneController,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                hintText: 'Masukkan nomor telepon',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                filled: true,
-                fillColor: Colors.grey[200],
-                contentPadding: const EdgeInsets.all(12),
+            // Form Section menggunakan GFCard
+            GFCard(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 4,
+              content: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Nomor Telepon menggunakan GFTextField
+                  _buildSectionTitle(Icons.phone, 'Nomor Telepon'),
+                  const SizedBox(height: 12),
+                  GFTextField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintText: 'Masukkan nomor telepon',
+                      hintStyle: TextStyle(color: Colors.grey[400]),
+                      prefixIcon: const Icon(
+                        Icons.phone_android,
+                        color: Colors.pinkAccent,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Colors.pinkAccent,
+                          width: 2,
+                        ),
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[50],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Tanggal Lahir menggunakan GFButton
+                  _buildSectionTitle(Icons.cake, 'Tanggal Lahir'),
+                  const SizedBox(height: 12),
+                  GFButton(
+                    onPressed: _pickDate,
+                    color: const Color.from(alpha: 1, red: 0.98, green: 0.98, blue: 0.98),
+                    type: GFButtonType.outline2x,
+                    shape: GFButtonShape.pills,
+                    fullWidthButton: true,
+                    textStyle: TextStyle(
+                      fontSize: 16,
+                      color: _selectedDate == null
+                          ? Colors.grey[400]
+                          : Colors.black87,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          color: Colors.pinkAccent,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          _selectedDate == null
+                              ? 'Pilih tanggal lahir'
+                              : '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}',
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Gender
+                  _buildSectionTitle(Icons.person, 'Jenis Kelamin'),
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[50],
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[300]!),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.wc,
+                          color: Colors.pinkAccent,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              value: _gender,
+                              isExpanded: true,
+                              icon: const Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.pinkAccent,
+                              ),
+                              items: ['Laki-laki', 'Perempuan']
+                                  .map((e) => DropdownMenuItem(
+                                        value: e,
+                                        child: Text(
+                                          e,
+                                          style: const TextStyle(fontSize: 16),
+                                        ),
+                                      ))
+                                  .toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _gender = value;
+                                  });
+                                }
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: 16),
 
-            // Tanggal Lahir
-            GFButton(
-              onPressed: _pickDate,
-              text: _selectedDate == null
-                  ? 'Pilih Tanggal Lahir'
-                  : 'Tanggal Lahir: ${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}',
-              color: Colors.pinkAccent,
-              fullWidthButton: true,
-            ),
-            const SizedBox(height: 16),
-
-            // Gender
-            const Text('Gender'),
-            const SizedBox(height: 4),
-            DropdownButton<String>(
-              value: _gender,
-              items: ['Laki-laki', 'Perempuan']
-                  .map((e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() {
-                    _gender = value;
-                  });
-                }
-              },
-            ),
             const SizedBox(height: 32),
 
-            // Tombol Simpan
-            GFButton(
-              onPressed: _saveProfile,
-              text: 'Simpan',
-              color: Colors.pinkAccent,
-              fullWidthButton: true,
+            // Tombol Simpan menggunakan GFButton
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GFButton(
+                onPressed: _saveProfile,
+                color: Colors.pinkAccent,
+                size: GFSize.LARGE,
+                fullWidthButton: true,
+                shape: GFButtonShape.pills,
+                icon: const Icon(
+                  Icons.save,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                text: 'Simpan Profil',
+                textStyle: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
+
+            const SizedBox(height: 32),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSectionTitle(IconData icon, String title) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.pinkAccent),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+      ],
     );
   }
 }

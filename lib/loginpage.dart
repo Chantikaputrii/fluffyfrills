@@ -97,6 +97,8 @@ class _LoginPageState extends State<LoginPage>
     setState(() => _isLoading = false);
 
     if (!mounted) return;
+    
+    // ✅ SUDAH BENAR - pushReplacement menghapus login dari stack
     Navigator.of(context).pushReplacement(MaterialPageRoute(
       builder: (_) => DashboardPage(
         userEmail: savedEmail,
@@ -265,7 +267,7 @@ class _LoginPageState extends State<LoginPage>
                         ),
                         const SizedBox(height: 16),
 
-                        // ke register
+                        // ✅ PERBAIKAN DI SINI - ke register
                         TextButton(
                           onPressed: () async {
                             final result = await Navigator.push(
@@ -283,7 +285,8 @@ class _LoginPageState extends State<LoginPage>
                                   prefs.getString('savedEmail') ?? '';
                               await prefs.setBool('isLoggedIn', true);
 
-                              Navigator.pushReplacement(
+                              // ✅ GANTI pushReplacement JADI pushAndRemoveUntil
+                              Navigator.pushAndRemoveUntil(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => DashboardPage(
@@ -291,6 +294,7 @@ class _LoginPageState extends State<LoginPage>
                                     userName: username,
                                   ),
                                 ),
+                                (route) => false, // Hapus SEMUA halaman sebelumnya
                               );
                             }
                           },
